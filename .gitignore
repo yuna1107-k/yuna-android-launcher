@@ -9,9 +9,9 @@ WallpaperPicker/gen/
 WallpaperPicker/.project.properties
 bin/
 .idea/
-.gradle/
-local.properties
-gradle/
+.local.properties
 build/
-gradlew*
 .DS_Store
+
+# Gradle build (AOSP deps fetched by gradle-build/fetch_aosp_deps.sh)
+external/
