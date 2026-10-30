@@ -305,6 +305,10 @@ public class LauncherAppState implements SafeCloseable {
             if (Themes.KEY_THEMED_ICONS.equals(key)) {
                 mIconProvider.setIconThemeSupported(Themes.isThemedIconEnabled(mContext));
                 verifyIconChanged();
+            } else if (CustomSettings.KEY_ICON_SHAPE.equals(key)
+                    || CustomSettings.KEY_ICON_PACK.equals(key)) {
+                // Custom: icon shape / pack is part of the icon state; reload icons if changed.
+                MODEL_EXECUTOR.execute(this::verifyIconChanged);
             } else if (GRID_NAME_PREFS_KEY.equals(key)) {
                 FileLog.d(TAG, "onPrefChanged GRID_NAME changed: "
                         + LauncherPrefs.get(mContext).get(GRID_NAME));

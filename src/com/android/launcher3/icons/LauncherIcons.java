@@ -17,11 +17,20 @@
 package com.android.launcher3.icons;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.RectF;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.UserHandle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.custom.CustomIconShape;
+import com.android.launcher3.custom.IconPacks;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.icons.mono.MonoIconThemeController;
 import com.android.launcher3.pm.UserCache;
@@ -54,6 +63,8 @@ public class LauncherIcons extends BaseIconFactory implements AutoCloseable {
     }
 
     private final ConcurrentLinkedQueue<LauncherIcons> mPool;
+    private boolean mNormalizerPrimed;
+    private ColorExtractor mColorExtractor;
 
     protected LauncherIcons(Context context, int fillResIconDpi, int iconBitmapSize,
             ConcurrentLinkedQueue<LauncherIcons> pool) {
@@ -71,6 +82,49 @@ public class LauncherIcons extends BaseIconFactory implements AutoCloseable {
     public void recycle() {
         clear();
         mPool.add(this);
+    }
+
+    // Custom: apply the user-selected icon shape (CustomIconShape).
+    @Nullable
+    @Override
+    protected AdaptiveIconDrawable normalizeAndWrapToAdaptiveIcon(@Nullable Drawable icon,
+            @Nullable RectF outIconBounds, @NonNull float[] outScale) {
+        return CustomIconShape.wrap(mContext,
+                super.normalizeAndWrapToAdaptiveIcon(icon, outIconBounds, outScale));
+    }
+
+    // Custom: the normalizer caches the adaptive icon scale, so compute it with the custom shape.
+    @NonNull
+    @Override
+    public IconNormalizer getNormalizer() {
+        IconNormalizer normalizer = super.getNormalizer();
+        if (!mNormalizerPrimed) {
+            mNormalizerPrimed = true;
+            normalizer.getScale(CustomIconShape.wrap(mContext,
+                    new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK), null)),
+                    null, null, null);
+        }
+        return normalizer;
+    }
+
+    // Custom: non-adaptive icon pack icons are drawn as-is (no adaptive wrapping/mask).
+    @NonNull
+    @Override
+    public BitmapInfo createBadgedIconBitmap(@NonNull Drawable icon,
+            @Nullable IconOptions options) {
+        if (!(icon instanceof IconPacks.IconPackDrawable packIcon)) {
+            return super.createBadgedIconBitmap(icon, options);
+        }
+        Drawable d = packIcon.getDrawable();
+        float scale = getNormalizer().getScale(d, null, null, null);
+        Bitmap bitmap = createIconBitmap(d, scale,
+                options == null ? MODE_WITH_SHADOW : options.mGenerationMode);
+        if (mColorExtractor == null) {
+            mColorExtractor = new ColorExtractor();
+        }
+        int color = (options != null && options.mExtractedColor != null)
+                ? options.mExtractedColor : mColorExtractor.findDominantColorByHue(bitmap);
+        return BitmapInfo.of(bitmap, color).withFlags(getBitmapFlagOp(options));
     }
 
     @NonNull

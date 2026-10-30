@@ -45,6 +45,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback;
@@ -60,6 +61,7 @@ import com.android.launcher3.Flags;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherFiles;
 import com.android.launcher3.custom.CustomSettings;
+import com.android.launcher3.custom.IconPacks;
 import com.android.launcher3.R;
 import com.android.launcher3.states.RotationHelper;
 import com.android.launcher3.util.DisplayController;
@@ -333,6 +335,10 @@ public class SettingsActivity extends FragmentActivity
                                 .onConfigChanged(appContext));
                         return true;
                     });
+                    return true;
+                case CustomSettings.KEY_ICON_PACK:
+                    // Icons reload via LauncherAppState's pref listener.
+                    IconPacks.setupPreference((ListPreference) preference);
                     return true;
                 case DEVELOPER_OPTIONS_KEY:
                     if (IS_STUDIO_BUILD) {

@@ -41,6 +41,7 @@ import android.view.ViewOutlineProvider;
 
 import com.android.launcher3.R;
 import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
+import com.android.launcher3.custom.CustomIconShape;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.dagger.LauncherAppSingleton;
 import com.android.launcher3.dagger.LauncherBaseAppComponent;
@@ -92,8 +93,9 @@ public final class IconShape {
 
         Region full = new Region(0, 0, size, size);
         Region iconR = new Region();
-        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
-                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
+        // Custom: match folder/reveal shapes to the user-selected icon shape.
+        AdaptiveIconDrawable drawable = CustomIconShape.wrap(context, new AdaptiveIconDrawable(
+                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK)));
         drawable.setBounds(0, 0, size, size);
         iconR.setPath(drawable.getIconMask(), full);
 

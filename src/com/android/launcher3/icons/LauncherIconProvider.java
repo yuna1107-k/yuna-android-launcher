@@ -17,8 +17,10 @@ package com.android.launcher3.icons;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ComponentInfo;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -27,6 +29,8 @@ import androidx.annotation.NonNull;
 
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.CustomIconShape;
+import com.android.launcher3.custom.IconPacks;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.Themes;
 
@@ -71,7 +75,23 @@ public class LauncherIconProvider extends IconProvider {
 
     @Override
     public String getSystemIconState() {
-        return super.getSystemIconState() + (mSupportsIconTheme ? ",with-theme" : ",no-theme");
+        return super.getSystemIconState() + (mSupportsIconTheme ? ",with-theme" : ",no-theme")
+                // Custom: icon shape / pack changes invalidate the icon cache too.
+                + ",shape:" + CustomIconShape.getShapeKey(mContext)
+                + ",pack:" + IconPacks.getState(mContext);
+    }
+
+    // Custom: icons from the selected icon pack take precedence.
+    @Override
+    public Drawable getIcon(ComponentInfo info, int iconDpi) {
+        Drawable icon = IconPacks.getIcon(mContext, info, iconDpi);
+        return icon != null ? icon : super.getIcon(info, iconDpi);
+    }
+
+    @Override
+    public Drawable getIcon(ApplicationInfo info, int iconDpi) {
+        Drawable icon = IconPacks.getIcon(mContext, info, iconDpi);
+        return icon != null ? icon : super.getIcon(info, iconDpi);
     }
 
     @Override
