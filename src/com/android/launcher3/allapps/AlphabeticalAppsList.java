@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
+import com.android.launcher3.custom.DrawerListLayout;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
@@ -120,7 +121,9 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         mAppNameComparator = new AppInfoComparator(context);
         mWorkProviderManager = workProfileManager;
         mPrivateProviderManager = privateProfileManager;
-        mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().numShownAllAppsColumns;
+        // Custom: 1 per row in drawer list mode.
+        mNumAppsPerRowAllApps = DrawerListLayout.getAppsPerRow(context,
+                mActivityContext.getDeviceProfile().numShownAllAppsColumns);
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }

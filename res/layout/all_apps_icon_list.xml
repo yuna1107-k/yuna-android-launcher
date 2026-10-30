@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App drawer list mode: one app per row, small icon at the start, label after it. -->
+<com.android.launcher3.BubbleTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res-auto"
+    style="@style/BaseIcon.AllApps"
+    android:id="@+id/icon"
+    android:layout_height="@dimen/drawer_list_row_height"
+    android:gravity="start|center_vertical"
+    android:textAlignment="viewStart"
+    android:ellipsize="end"
+    android:paddingLeft="@dimen/drawer_list_row_padding"
+    android:paddingRight="@dimen/drawer_list_row_padding"
+    android:stateListAnimator="@animator/drawer_list_fastscroll_anim"
+    launcher:iconDisplay="all_apps"
+    launcher:layoutHorizontal="true"
+    launcher:iconSizeOverride="@dimen/drawer_list_icon_size" />

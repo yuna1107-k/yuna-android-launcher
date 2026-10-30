@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App drawer list mode (DrawerListLayout). -->
+    <dimen name="drawer_list_row_height">56dp</dimen>
+    <dimen name="drawer_list_icon_size">40dp</dimen>
+    <dimen name="drawer_list_icon_padding">16dp</dimen>
+    <dimen name="drawer_list_row_padding">12dp</dimen>
+    <dimen name="drawer_list_text_size">18sp</dimen>
+    <dimen name="drawer_list_fastscroll_nudge">12dp</dimen>
+</resources>

@@ -53,6 +53,16 @@ public final class CustomSettings {
     public static final String KEY_DRAWER_OPACITY = "pref_drawer_opacity";
     public static final int DRAWER_OPACITY_DEFAULT = -1; // use the built-in default
 
+    /** App drawer layout: "grid" (default) or "list". */
+    public static final String KEY_DRAWER_LAYOUT = "pref_drawer_layout";
+    public static final String DRAWER_LAYOUT_GRID = "grid";
+    public static final String DRAWER_LAYOUT_LIST = "list";
+
+    public static boolean isDrawerListLayout(Context context) {
+        return DRAWER_LAYOUT_LIST.equals(
+                prefs(context).getString(KEY_DRAWER_LAYOUT, DRAWER_LAYOUT_GRID));
+    }
+
     /** Returns the user's drawer opacity (0..1), or a negative value for the default. */
     public static float getDrawerOpacity(Context context) {
         int percent = prefs(context).getInt(KEY_DRAWER_OPACITY, DRAWER_OPACITY_DEFAULT);

@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
+import com.android.launcher3.custom.DrawerListLayout;
 import com.android.launcher3.util.ScrollableLayoutManager;
 import com.android.launcher3.views.ActivityContext;
 
@@ -77,7 +78,9 @@ public class AllAppsGridAdapter<T extends Context & ActivityContext> extends
         super(activityContext, inflater, apps, adapterProvider);
         mGridLayoutMgr = new AppsGridLayoutManager(mActivityContext);
         mGridLayoutMgr.setSpanSizeLookup(new GridSpanSizer());
-        setAppsPerRow(activityContext.getDeviceProfile().numShownAllAppsColumns);
+        // Custom: 1 per row in drawer list mode.
+        setAppsPerRow(DrawerListLayout.getAppsPerRow(activityContext,
+                activityContext.getDeviceProfile().numShownAllAppsColumns));
     }
 
     /**
