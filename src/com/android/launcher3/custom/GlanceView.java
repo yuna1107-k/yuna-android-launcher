@@ -78,11 +78,11 @@ public class GlanceView extends LinearLayout {
     public GlanceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOrientation(VERTICAL);
-        // Laid out like the Xperia home clock: centered horizontally, pinned to the top so
-        // there's no gap above it.
-        setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        // Laid out like the Xperia home clock: centered in the area it occupies, with some
+        // breathing room above and below.
+        setGravity(Gravity.CENTER);
         int pad = dp(8);
-        setPadding(pad, 0, pad, 0);
+        setPadding(pad, dp(10), pad, dp(10));
 
         // Clock row: the clock with the next alarm to its lower right.
         mClockRow = new LinearLayout(context);
@@ -107,21 +107,21 @@ public class GlanceView extends LinearLayout {
         LayoutParams sideLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
         sideLp.setMarginStart(dp(10));
-        sideLp.bottomMargin = dp(2);
+        sideLp.bottomMargin = dp(6);
         mClockRow.addView(side, sideLp);
-        mDate = styled(new TextView(context), 13);
+        mDate = styled(new TextView(context), 14);
         side.addView(mDate);
-        mWeather = styled(new TextView(context), 13);
+        mWeather = styled(new TextView(context), 14);
         side.addView(mWeather);
-        mAlarm = styled(new TextView(context), 13);
+        mAlarm = styled(new TextView(context), 14);
         side.addView(mAlarm);
         mAlarm.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
 
-        mEvent = styled(new TextView(context), 14);
+        mEvent = styled(new TextView(context), 15);
         mEvent.setGravity(Gravity.CENTER);
         LayoutParams eventLp = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
-        eventLp.topMargin = 0;
+        eventLp.topMargin = dp(4);
         addView(mEvent, eventLp);
 
         OnClickListener openWeek = v -> onDetailsClicked();

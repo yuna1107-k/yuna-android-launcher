@@ -47,7 +47,7 @@ public class SonyStyleClockView extends View {
             p.setColor(color);
             p.setShadowLayer(3 * density, 0, density / 2, shadow);
         }
-        setHourTextSize(64);
+        setHourTextSize(80);
         update();
     }
 
