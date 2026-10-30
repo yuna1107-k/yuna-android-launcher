@@ -32,6 +32,14 @@
             android:iconSpaceReserved="false" />
 
         <SwitchPreference
+            android:key="pref_hide_gesture_bar"
+            android:title="@string/hide_gesture_bar_title"
+            android:summary="@string/hide_gesture_bar_summary"
+            android:defaultValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
+
+        <SwitchPreference
             android:key="pref_enable_minus_one"
             android:title="@string/discover_pref_title"
             android:summary="@string/discover_pref_summary"

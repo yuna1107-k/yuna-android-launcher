@@ -182,6 +182,7 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.custom.AllAppsBackground;
 import com.android.launcher3.custom.StatusBarSwipeController;
 import com.android.launcher3.custom.DiscoverOverlay;
+import com.android.launcher3.custom.GestureBarHider;
 import com.android.launcher3.debug.TestEvent;
 import com.android.launcher3.debug.TestEventEmitter;
 import com.android.launcher3.dot.DotInfo;
@@ -1321,6 +1322,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     protected void onResume() {
         TraceHelper.INSTANCE.beginSection(ON_RESUME_EVT);
         super.onResume();
+        GestureBarHider.apply(this);
 
         if (mDeferOverlayCallbacks) {
             scheduleDeferredCheck();
@@ -2923,6 +2925,15 @@ public class Launcher extends StatefulActivity<LauncherState>
      *
      * @param progress Transition progress from 0 to 1; where 0 => home and 1 => all apps.
      */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            // Keep the gesture bar hidden after dialogs / transient reveals.
+            GestureBarHider.apply(this);
+        }
+    }
+
     public void onAllAppsTransition(float progress) {
         if (mAllAppsBackground == null) {
             mAllAppsBackground = new AllAppsBackground(this);

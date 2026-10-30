@@ -73,4 +73,6 @@
     <string name="icon_shape_sunny">Sunny</string>
     <string name="icon_pack_title">Icon pack</string>
     <string name="icon_pack_system">System</string>
+    <string name="hide_gesture_bar_title">Hide gesture bar</string>
+    <string name="hide_gesture_bar_summary">Hide the navigation handle on the home screen (swipe from the bottom edge to show it)</string>
 </resources>

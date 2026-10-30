@@ -58,6 +58,13 @@ public final class CustomSettings {
 
     private CustomSettings() { }
 
+    /** Whether the gesture bar (navigation handle) is hidden on the home screen. */
+    public static final String KEY_HIDE_GESTURE_BAR = "pref_hide_gesture_bar";
+
+    public static boolean isGestureBarHidden(Context context) {
+        return prefs(context).getBoolean(KEY_HIDE_GESTURE_BAR, true);
+    }
+
     /** Opens Home settings. */
     public static void openSettings(Context context) {
         context.startActivity(new android.content.Intent(

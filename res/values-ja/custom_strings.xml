@@ -68,4 +68,6 @@
     <string name="icon_shape_sunny">サニー</string>
     <string name="icon_pack_title">アイコンパック</string>
     <string name="icon_pack_system">システム</string>
+    <string name="hide_gesture_bar_title">ジェスチャーバーを非表示</string>
+    <string name="hide_gesture_bar_summary">ホーム画面で画面下のバーを隠します（下端からスワイプで一時表示）</string>
 </resources>
