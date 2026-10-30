@@ -85,6 +85,13 @@ public class FirstPagePinnedView extends FrameLayout {
     // ---------------------------------------------------------------------------------------
     // Size: take as few rows as the content needs
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        // The width is known now; measure how many rows the content really needs.
+        post(this::updateNeededRows);
+    }
+
     private void updateNeededRows() {
         View glance = findViewById(R.id.glance_view);
         Launcher launcher = launcher();
@@ -103,6 +110,7 @@ public class FirstPagePinnedView extends FrameLayout {
         int maxRows = Math.max(1, (int) ((dp.heightPx * MAX_HEIGHT_FRACTION + border)
                 / (cell + border)));
         rows = Math.min(rows, maxRows);
+        android.util.Log.d("FirstPagePinnedView", "content " + needed + "px -> " + rows + " rows");
         // Triggers a reload when it changes.
         CustomSettings.setGlanceRows(getContext(), rows);
         requestLayout();
