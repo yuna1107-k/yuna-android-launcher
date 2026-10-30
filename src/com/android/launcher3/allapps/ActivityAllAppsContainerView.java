@@ -82,6 +82,7 @@ import com.android.launcher3.allapps.search.AllAppsSearchUiDelegate;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.custom.AllAppsBackground;
+import com.android.launcher3.custom.DrawerMenu;
 import com.android.launcher3.keyboard.FocusedItemDecorator;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.model.StringCache;
@@ -286,6 +287,8 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             // Add the search box above everything else in this container (if the flag is enabled,
             // it's added to drag layer in onAttach instead).
             addView(mSearchContainer);
+            // Custom: 3-dot menu button next to the search bar.
+            DrawerMenu.attach(this, mSearchContainer);
             // The search container is visually at the top of the all apps UI, and should thus be
             // focused by default. It's added to end of the children list, so it needs to be
             // explicitly marked as focused by default.

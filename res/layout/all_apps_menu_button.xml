@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 3-dot menu button shown at the end of the app drawer search bar (see custom/DrawerMenu). -->
+<ImageButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/all_apps_menu_button"
+    android:layout_width="48dp"
+    android:layout_height="@dimen/all_apps_search_bar_field_height"
+    android:layout_alignTop="@id/search_container_all_apps"
+    android:layout_toEndOf="@id/search_container_all_apps"
+    android:layout_marginTop="@dimen/all_apps_search_bar_content_overlap"
+    android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:contentDescription="@string/all_apps_menu_description"
+    android:scaleType="center"
+    android:src="@drawable/ic_more_vert" />

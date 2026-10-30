@@ -265,7 +265,8 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
      * Event handler for the wallpaper picker button that appears after a long press
      * on the home screen.
      */
-    private static boolean startWallpaperPicker(View v) {
+    // Custom: public so the app drawer menu (custom/DrawerMenu) can reuse it.
+    public static boolean startWallpaperPicker(View v) {
         Launcher launcher = Launcher.getLauncher(v.getContext());
         if (!Utilities.isWallpaperAllowed(launcher)) {
             String message = launcher.getStringCache() != null
