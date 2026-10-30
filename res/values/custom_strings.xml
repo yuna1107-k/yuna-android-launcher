@@ -59,4 +59,6 @@
     <string name="drawer_layout_title">Layout</string>
     <string name="drawer_layout_grid">Grid</string>
     <string name="drawer_layout_list">List</string>
+    <!-- Content description of the 3-dot menu button next to the app drawer search bar. -->
+    <string name="all_apps_menu_description">More options</string>
 </resources>

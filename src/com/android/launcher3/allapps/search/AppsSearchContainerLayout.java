@@ -62,6 +62,10 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     // The amount of pixels to shift down and overlap with the rest of the content.
     private final int mContentOverlap;
 
+    // Custom: menu button laid out at the end of the search bar (custom/DrawerMenu).
+    private View mEndButton;
+    private int mEndReserve;
+
     public AppsSearchContainerLayout(Context context) {
         this(context, null);
     }
@@ -112,6 +116,8 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         int iconPadding = cellWidth - iconVisibleSize;
 
         int myWidth = rowWidth - iconPadding + getPaddingLeft() + getPaddingRight();
+        // Custom: leave room for the menu button.
+        myWidth -= mEndReserve;
         super.onMeasure(makeMeasureSpec(myWidth, EXACTLY), heightMeasureSpec);
     }
 
@@ -123,9 +129,14 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         View parent = (View) getParent();
         int availableWidth = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
         int myWidth = right - left;
-        int expectedLeft = parent.getPaddingLeft() + (availableWidth - myWidth) / 2;
+        // Custom: center the search bar together with the menu button at its end.
+        int expectedLeft = parent.getPaddingLeft() + (availableWidth - myWidth - mEndReserve) / 2
+                + (getLayoutDirection() == LAYOUT_DIRECTION_RTL ? mEndReserve : 0);
         int shift = expectedLeft - left;
         setTranslationX(shift);
+        if (mEndButton != null) {
+            mEndButton.setTranslationX(shift);
+        }
 
         offsetTopAndBottom(mContentOverlap);
     }
@@ -187,6 +198,17 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public void setInsets(Rect insets) {
         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
         mlp.topMargin = insets.top;
+        requestLayout();
+    }
+
+    /**
+     * Custom: places {@code button} right after the search bar (it is laid out toEndOf this view)
+     * and shrinks the search bar to make room.
+     */
+    public void setEndButton(View button) {
+        mEndButton = button;
+        MarginLayoutParams lp = (MarginLayoutParams) button.getLayoutParams();
+        mEndReserve = lp.width + lp.getMarginStart() + lp.getMarginEnd();
         requestLayout();
     }
 
