@@ -81,17 +81,30 @@ public class LauncherIconProvider extends IconProvider {
                 + ",pack:" + IconPacks.getState(mContext);
     }
 
-    // Custom: icons from the selected icon pack take precedence.
+    // Custom: icons from the selected icon pack take precedence; apps the pack doesn't cover
+    // get a fallback in the pack's style.
     @Override
     public Drawable getIcon(ComponentInfo info, int iconDpi) {
         Drawable icon = IconPacks.getIcon(mContext, info, iconDpi);
-        return icon != null ? icon : super.getIcon(info, iconDpi);
+        if (icon != null) {
+            return icon;
+        }
+        Drawable original = super.getIcon(info, iconDpi);
+        Drawable fallback = IconPacks.getFallbackIcon(mContext, original,
+                info.loadLabel(mContext.getPackageManager()), iconDpi);
+        return fallback != null ? fallback : original;
     }
 
     @Override
     public Drawable getIcon(ApplicationInfo info, int iconDpi) {
         Drawable icon = IconPacks.getIcon(mContext, info, iconDpi);
-        return icon != null ? icon : super.getIcon(info, iconDpi);
+        if (icon != null) {
+            return icon;
+        }
+        Drawable original = super.getIcon(info, iconDpi);
+        Drawable fallback = IconPacks.getFallbackIcon(mContext, original,
+                info.loadLabel(mContext.getPackageManager()), iconDpi);
+        return fallback != null ? fallback : original;
     }
 
     @Override

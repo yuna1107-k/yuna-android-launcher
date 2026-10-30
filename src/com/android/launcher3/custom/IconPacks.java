@@ -50,6 +50,7 @@ public final class IconPacks {
     };
 
     private static final Object LOCK = new Object();
+    private static final int FALLBACK_VERSION = 3;
     private static IconPack sLoaded;
     private static String sLastState;
 
@@ -102,7 +103,8 @@ public final class IconPacks {
         if (!TextUtils.isEmpty(pkg)) {
             try {
                 PackageInfo info = context.getPackageManager().getPackageInfo(pkg, 0);
-                state = pkg + "@" + info.lastUpdateTime;
+                // FALLBACK_VERSION: bump when fallback icons change so cached icons rebuild.
+                state = pkg + "@" + info.lastUpdateTime + "#" + FALLBACK_VERSION;
             } catch (PackageManager.NameNotFoundException e) {
                 // Uninstalled: behave as if no pack is selected.
             }
@@ -131,6 +133,31 @@ public final class IconPacks {
     public static Drawable getIcon(Context context, ApplicationInfo info, int iconDpi) {
         IconPack pack = getSelectedPack(context);
         return pack == null ? null : pack.getIcon(pack.mPackages.get(info.packageName), iconDpi);
+    }
+
+    /**
+     * Icon in the pack's style for an app the pack doesn't cover (see IconPackFallback), or
+     * null to keep the app's own icon.
+     */
+    @Nullable
+    public static Drawable getFallbackIcon(Context context, Drawable original,
+            @Nullable CharSequence label, int iconDpi) {
+        IconPack pack = getSelectedPack(context);
+        if (pack == null || original == null) {
+            return null;
+        }
+        Drawable composed = IconPackFallback.compose(context, original,
+                pack.getIcon(pack.mIconBack, iconDpi), pack.getIcon(pack.mIconMask, iconDpi),
+                pack.getIcon(pack.mIconUpon, iconDpi), pack.mScale);
+        if (composed != null) {
+            return new IconPackDrawable(composed);
+        }
+        IconPackFallback.Style style = pack.style(iconDpi);
+        if (style.adaptive) {
+            return IconPackFallback.adaptiveIcon(context, original, label, style);
+        }
+        return style.lineArt ? new IconPackDrawable(
+                IconPackFallback.lineIcon(context, original, label, style.color)) : null;
     }
 
     @Nullable
@@ -163,6 +190,30 @@ public final class IconPacks {
         final Map<ComponentName, String> mComponents = new HashMap<>();
         final Map<String, String> mPackages = new HashMap<>();
         private final Map<String, Integer> mIds = new ConcurrentHashMap<>();
+        // Fallback recipe for apps the pack doesn't cover.
+        @Nullable String mIconBack;
+        @Nullable String mIconMask;
+        @Nullable String mIconUpon;
+        float mScale = 1f;
+        @Nullable private IconPackFallback.Style mStyle;
+
+        /** Samples a few of the pack's icons to find its look (line art? color?). */
+        synchronized IconPackFallback.Style style(int iconDpi) {
+            if (mStyle == null) {
+                java.util.List<Drawable> samples = new java.util.ArrayList<>();
+                for (String name : mComponents.values()) {
+                    Drawable d = getIcon(name, iconDpi);
+                    if (d != null) {
+                        samples.add(d);
+                    }
+                    if (samples.size() >= 8) {
+                        break;
+                    }
+                }
+                mStyle = IconPackFallback.sample(samples);
+            }
+            return mStyle;
+        }
 
         private IconPack(String pkg, @Nullable Resources res) {
             mPackage = pkg;
@@ -200,7 +251,22 @@ public final class IconPacks {
             try {
                 int type;
                 while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
-                    if (type != XmlPullParser.START_TAG || !"item".equals(parser.getName())) {
+                    if (type != XmlPullParser.START_TAG) {
+                        continue;
+                    }
+                    switch (parser.getName()) {
+                        case "iconback" -> mIconBack = parser.getAttributeValue(null, "img1");
+                        case "iconmask" -> mIconMask = parser.getAttributeValue(null, "img1");
+                        case "iconupon" -> mIconUpon = parser.getAttributeValue(null, "img1");
+                        case "scale" -> {
+                            try {
+                                mScale = Float.parseFloat(
+                                        parser.getAttributeValue(null, "factor"));
+                            } catch (RuntimeException ignored) { }
+                        }
+                        default -> { }
+                    }
+                    if (!"item".equals(parser.getName())) {
                         continue;
                     }
                     String component = parser.getAttributeValue(null, "component");
