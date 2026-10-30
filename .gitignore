@@ -16,3 +16,6 @@ build/
 
 # Gradle build (AOSP deps fetched by gradle-build/fetch_aosp_deps.sh)
 external/
+
+# Claude Code local files (agent worktrees etc.)
+.claude/
