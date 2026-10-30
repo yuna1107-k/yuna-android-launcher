@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 
-import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.CheckLongPressHelper;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
@@ -25,13 +24,14 @@ import com.android.launcher3.views.ActivityContext;
 /**
  * The item pinned to the first home page: the glance panel above the search bar.
  *
- * - Long-press shows a menu for the part under the finger.
- * - Keep holding and drag up or down to move it; it snaps to the nearest row on release.
- * - It takes only as many rows as its content needs.
+ * - Long-press lifts it; drag up or down to move it (snaps to the nearest row on release),
+ *   or release without moving to get the menu for the part under the finger.
+ * - It takes only as many rows as its content needs, at most half the screen height.
  */
 public class FirstPagePinnedView extends FrameLayout {
 
     private static final int SEARCH_BAR_HEIGHT_DP = 56;
+    private static final float MAX_HEIGHT_FRACTION = 0.5f;
 
     private final CheckLongPressHelper mLongPressHelper;
     private final float mTouchSlop;
@@ -40,7 +40,10 @@ public class FirstPagePinnedView extends FrameLayout {
 
     public FirstPagePinnedView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mLongPressHelper = new CheckLongPressHelper(this, v -> showMenu());
+        mLongPressHelper = new CheckLongPressHelper(this, v -> {
+            lift();
+            return true;
+        });
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
@@ -96,6 +99,10 @@ public class FirstPagePinnedView extends FrameLayout {
         int border = dp.cellLayoutBorderSpacePx.y;
         // Smallest n with n * cell + (n - 1) * border >= needed.
         int rows = Math.max(1, (int) Math.ceil((needed + border) / (float) (cell + border)));
+        // At most half the screen height.
+        int maxRows = Math.max(1, (int) ((dp.heightPx * MAX_HEIGHT_FRACTION + border)
+                / (cell + border)));
+        rows = Math.min(rows, maxRows);
         // Triggers a reload when it changes.
         CustomSettings.setGlanceRows(getContext(), rows);
         requestLayout();
@@ -134,6 +141,11 @@ public class FirstPagePinnedView extends FrameLayout {
             case MotionEvent.ACTION_CANCEL:
                 if (mDragging) {
                     endDrag(ev.getActionMasked() == MotionEvent.ACTION_UP);
+                } else {
+                    drop();
+                    if (ev.getActionMasked() == MotionEvent.ACTION_UP) {
+                        showMenu();
+                    }
                 }
                 mLongPressHelper.cancelLongPress();
                 return true;
@@ -141,15 +153,10 @@ public class FirstPagePinnedView extends FrameLayout {
         return true;
     }
 
-    private void startDrag() {
-        mDragging = true;
-        Launcher launcher = launcher();
-        if (launcher != null) {
-            // Swap the menu for drag mode.
-            AbstractFloatingView.closeOpenViews(launcher, true,
-                    AbstractFloatingView.TYPE_OPTIONS_POPUP);
-        }
+    /** Long press: lift the item to show it can be moved. */
+    private void lift() {
         getParent().requestDisallowInterceptTouchEvent(true);
+        performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
         int accent = getContext().getColor(R.color.materialColorPrimary);
         GradientDrawable outline = new GradientDrawable();
         outline.setCornerRadius(dp(20));
@@ -157,6 +164,16 @@ public class FirstPagePinnedView extends FrameLayout {
         outline.setColor(ColorUtils.setAlphaComponent(accent, 0x22));
         setForeground(outline);
         animate().scaleX(1.03f).scaleY(1.03f).setDuration(150).start();
+    }
+
+    private void drop() {
+        animate().scaleX(1f).scaleY(1f).translationY(0).setDuration(150).start();
+        setForeground(null);
+    }
+
+    private void startDrag() {
+        mDragging = true;
+        getParent().requestDisallowInterceptTouchEvent(true);
     }
 
     private void endDrag(boolean commit) {

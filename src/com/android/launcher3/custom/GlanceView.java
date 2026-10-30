@@ -51,6 +51,7 @@ public class GlanceView extends LinearLayout {
     private static final long SOON_MINUTES = 60;
     private static final String KEY_PERMISSIONS_ASKED = "pref_glance_permissions_asked";
 
+    private final LinearLayout mClockRow;
     private final FrameLayout mClockContainer;
     private final SonyStyleClockView mClock;
     private final GlanceClockWidget mClockWidget;
@@ -82,11 +83,17 @@ public class GlanceView extends LinearLayout {
         int pad = dp(8);
         setPadding(pad, 0, pad, 0);
 
-        mClockContainer = new FrameLayout(context);
-        LayoutParams clockLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
+        // Clock row: the clock with the next alarm to its lower right.
+        mClockRow = new LinearLayout(context);
+        mClockRow.setOrientation(HORIZONTAL);
+        mClockRow.setGravity(Gravity.BOTTOM);
+        LayoutParams clockRowLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
-        clockLp.gravity = Gravity.CENTER_HORIZONTAL;
-        addView(mClockContainer, clockLp);
+        clockRowLp.gravity = Gravity.CENTER_HORIZONTAL;
+        addView(mClockRow, clockRowLp);
+        mClockContainer = new FrameLayout(context);
+        mClockRow.addView(mClockContainer, new LayoutParams(LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT));
         mClock = new SonyStyleClockView(context);
         mClock.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
         mClockWidget = new GlanceClockWidget(context);
@@ -98,20 +105,21 @@ public class GlanceView extends LinearLayout {
                 LayoutParams.WRAP_CONTENT);
         rowLp.gravity = Gravity.CENTER_HORIZONTAL;
         addView(row, rowLp);
-        mDate = styled(new TextView(context), 17);
-        row.addView(mDate);
         mWeather = styled(new TextView(context), 17);
-        LayoutParams weatherLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-        weatherLp.setMarginStart(dp(12));
-        row.addView(mWeather, weatherLp);
+        row.addView(mWeather);
 
-        mAlarm = styled(new TextView(context), 15);
-        mAlarm.setGravity(Gravity.CENTER);
-        LayoutParams alarmLp = new LayoutParams(LayoutParams.MATCH_PARENT,
+        // Right of the clock: date ('26 10/30 Fri) above the next alarm.
+        LinearLayout side = new LinearLayout(context);
+        side.setOrientation(VERTICAL);
+        LayoutParams sideLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
-        alarmLp.topMargin = dp(2);
-        addView(mAlarm, alarmLp);
+        sideLp.setMarginStart(dp(10));
+        sideLp.bottomMargin = dp(6);
+        mClockRow.addView(side, sideLp);
+        mDate = styled(new TextView(context), 15);
+        side.addView(mDate);
+        mAlarm = styled(new TextView(context), 15);
+        side.addView(mAlarm);
         mAlarm.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
 
         mEvent = styled(new TextView(context), 15);
@@ -161,10 +169,16 @@ public class GlanceView extends LinearLayout {
                 widget != null ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT,
                 widget != null ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT));
         // A widget fills the space above the date; the built-in clock wraps its content.
+        boolean isWidget = widget != null;
+        LayoutParams rowLp = (LayoutParams) mClockRow.getLayoutParams();
+        rowLp.width = isWidget ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT;
+        rowLp.height = isWidget ? 0 : LayoutParams.WRAP_CONTENT;
+        rowLp.weight = isWidget ? 1 : 0;
+        mClockRow.setLayoutParams(rowLp);
         LayoutParams lp = (LayoutParams) mClockContainer.getLayoutParams();
-        lp.width = widget != null ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT;
-        lp.height = widget != null ? 0 : LayoutParams.WRAP_CONTENT;
-        lp.weight = widget != null ? 1 : 0;
+        lp.width = isWidget ? 0 : LayoutParams.WRAP_CONTENT;
+        lp.height = isWidget ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT;
+        lp.weight = isWidget ? 1 : 0;
         mClockContainer.setLayoutParams(lp);
         mShownClock = clock;
     }
@@ -229,8 +243,8 @@ public class GlanceView extends LinearLayout {
 
     private void refreshDateAndEvents() {
         mClock.update();
-        String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdEEE");
-        mDate.setText(DateFormat.format(pattern, System.currentTimeMillis()));
+        mDate.setText(new java.text.SimpleDateFormat("''yy M/d EEE", Locale.US)
+                .format(new java.util.Date()));
         updateAlarm();
 
         if (!CalendarRepository.hasPermission(getContext())) {
@@ -277,16 +291,22 @@ public class GlanceView extends LinearLayout {
         String day = DateFormat.format(
                 DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEE"),
                 next.getTriggerTime()).toString();
-        mAlarm.setText(getContext().getString(R.string.glance_alarm,
-                DateFormat.getTimeFormat(getContext()).format(next.getTriggerTime()), day));
-        android.graphics.drawable.Drawable icon = getContext().getDrawable(R.drawable.ic_glance_alarm);
+        String text = getContext().getString(R.string.glance_alarm,
+                DateFormat.getTimeFormat(getContext()).format(next.getTriggerTime()), day);
+        // Icon inline with the text, centered on the line, so it stays next to the centered
+        // text and lines up with the font.
+        android.text.SpannableString line = new android.text.SpannableString("\u00A0 " + text);
+        android.graphics.drawable.Drawable icon =
+                getContext().getDrawable(R.drawable.ic_glance_alarm);
         if (icon != null) {
-            int size = Math.round(mAlarm.getTextSize());
+            int size = Math.round(mAlarm.getTextSize() * 1.05f);
             icon.setBounds(0, 0, size, size);
             icon.setTint(mAlarm.getCurrentTextColor());
-            mAlarm.setCompoundDrawablesRelative(icon, null, null, null);
-            mAlarm.setCompoundDrawablePadding(dp(4));
+            line.setSpan(new android.text.style.ImageSpan(icon,
+                            android.text.style.DynamicDrawableSpan.ALIGN_CENTER),
+                    0, 1, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+        mAlarm.setText(line);
         mAlarm.setVisibility(VISIBLE);
     }
 

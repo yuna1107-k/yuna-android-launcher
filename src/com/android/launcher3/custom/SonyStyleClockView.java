@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.text.format.DateFormat;
 import android.util.TypedValue;
 import android.view.View;
@@ -18,8 +19,8 @@ import java.util.Locale;
 
 /**
  * Clock in the style of the Xperia home screen clock: large hours with smaller minutes to the
- * upper right, their tops aligned. Drawn directly so the alignment is exact. Uses the Mushin font
- * and the wallpaper-based theme accent color.
+ * upper right, their tops aligned. Drawn directly so the alignment is exact. Uses a thin sans
+ * like the original and the wallpaper-based theme accent color.
  */
 public class SonyStyleClockView extends View {
 
@@ -41,11 +42,12 @@ public class SonyStyleClockView extends View {
         int shadow = Themes.getAttrColor(context, R.attr.workspaceShadowColor);
         float density = getResources().getDisplayMetrics().density;
         for (Paint p : new Paint[] {mHourPaint, mMinutePaint}) {
-            p.setTypeface(CustomFonts.mushin(context));
+            // Thin system sans like the Xperia clock (only the clock digits; other text is Mushin).
+            p.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
             p.setColor(color);
             p.setShadowLayer(3 * density, 0, density / 2, shadow);
         }
-        setHourTextSize(96);
+        setHourTextSize(84);
         update();
     }
 

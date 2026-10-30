@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.core.graphics.ColorUtils;
 
+import com.android.launcher3.InsettableFrameLayout;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.views.AbstractSlideInView;
@@ -43,6 +44,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
     private static final int DAYS = 7;
     private static final long DAY_MS = 24L * 60 * 60 * 1000;
     private static final float MAX_HEIGHT_FRACTION = 0.75f;
+    private static final float WIDTH_FRACTION = 0.8f;
     private static final long CLOSE_DURATION = 300;
 
     private final Launcher mLauncher;
@@ -57,6 +59,11 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
     public static void show(Launcher launcher) {
         AbstractSlideInView.closeAllOpenViews(launcher);
         CalendarPanel panel = new CalendarPanel(launcher);
+        // Full-size container (the sheet sits at its bottom); insets are handled by the sheet.
+        InsettableFrameLayout.LayoutParams lp = new InsettableFrameLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        lp.ignoreInsets = true;
+        panel.setLayoutParams(lp);
         panel.attachToContainer();
         panel.mIsOpen = true;
         panel.setTranslationShift(TRANSLATION_SHIFT_CLOSED);
@@ -94,12 +101,9 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
         handle.setBackground(handleBg);
         LayoutParams handleLp = new LayoutParams(dp(36), dp(4));
         handleLp.gravity = Gravity.CENTER_HORIZONTAL;
-        handleLp.bottomMargin = dp(8);
+        handleLp.bottomMargin = dp(12);
         sheet.addView(handle, handleLp);
 
-        TextView title = text(launcher.getString(R.string.week_panel_title), 22, mOnSurface);
-        title.setPadding(dp(24), dp(4), dp(24), dp(12));
-        sheet.addView(title);
 
         mScroll = new ScrollView(launcher) {
             @Override
@@ -119,7 +123,12 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
                 LayoutParams.WRAP_CONTENT));
 
         mContent = sheet;
-        addView(sheet, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        // Grows up from the bottom edge, about 80% of the screen width, centered.
+        LayoutParams sheetLp = new LayoutParams(
+                Math.round(launcher.getDeviceProfile().widthPx * WIDTH_FRACTION),
+                LayoutParams.WRAP_CONTENT);
+        sheetLp.gravity = Gravity.CENTER_HORIZONTAL;
+        addView(sheet, sheetLp);
         load();
     }
 
