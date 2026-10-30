@@ -106,6 +106,24 @@
             android:persistent="true"
             android:iconSpaceReserved="false" />
 
+        <ListPreference
+            android:key="pref_icon_shape"
+            android:title="@string/icon_shape_title"
+            android:entries="@array/icon_shape_entries"
+            android:entryValues="@array/icon_shape_values"
+            android:defaultValue=""
+            android:persistent="true"
+            launcher:useSimpleSummaryProvider="true"
+            android:iconSpaceReserved="false" />
+
+        <ListPreference
+            android:key="pref_icon_pack"
+            android:title="@string/icon_pack_title"
+            android:defaultValue=""
+            android:persistent="true"
+            launcher:useSimpleSummaryProvider="true"
+            android:iconSpaceReserved="false" />
+
         <com.android.launcher3.settings.NotificationDotsPreference
             android:key="pref_icon_badging"
             android:title="@string/notification_dots_title"

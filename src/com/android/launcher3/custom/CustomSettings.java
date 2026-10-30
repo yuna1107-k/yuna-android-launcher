@@ -38,6 +38,24 @@ public final class CustomSettings {
     public static final int ICON_SIZE_MIN = 70;
     public static final int ICON_SIZE_MAX = 130;
 
+    /** Mask shape for adaptive icons: an AppShapesProvider key, or empty for the system shape. */
+    public static final String KEY_ICON_SHAPE = "pref_icon_shape";
+
+    /** Package of the selected third-party icon pack, or empty for none. */
+    public static final String KEY_ICON_PACK = "pref_icon_pack";
+
+    /** Returns the selected icon shape key, or "" for the system default. */
+    public static String getIconShape(Context context) {
+        String v = prefs(context).getString(KEY_ICON_SHAPE, "");
+        return v == null ? "" : v;
+    }
+
+    /** Returns the selected icon pack package, or "" for none. */
+    public static String getIconPack(Context context) {
+        String v = prefs(context).getString(KEY_ICON_PACK, "");
+        return v == null ? "" : v;
+    }
+
     private CustomSettings() { }
 
     /** Opens Home settings. */

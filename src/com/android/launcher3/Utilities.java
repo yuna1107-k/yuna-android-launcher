@@ -73,6 +73,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.graphics.ColorUtils;
 
+import com.android.launcher3.custom.CustomIconShape;
+import com.android.launcher3.custom.IconPacks;
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.TintedDrawableSpan;
 import com.android.launcher3.icons.BitmapInfo;
@@ -672,7 +674,9 @@ public final class Utilities {
             badge = icon.getBadge();
         }
 
-        if (mainIcon == null) {
+        if (mainIcon == null
+                // Custom: icon pack icons have no layers; use the plain bitmap instead.
+                || mainIcon instanceof IconPacks.IconPackDrawable) {
             return null;
         }
         AdaptiveIconDrawable result;
@@ -701,6 +705,11 @@ public final class Utilities {
                     }
                 }
             }
+        }
+
+        // Custom: apply the user-selected icon shape.
+        if (!(result instanceof FolderAdaptiveIcon)) {
+            result = CustomIconShape.wrap(context, result);
         }
 
         if (badge == null) {

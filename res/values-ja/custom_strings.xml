@@ -56,4 +56,16 @@
     <string name="drawer_layout_grid">グリッド</string>
     <string name="drawer_layout_list">リスト</string>
     <string name="all_apps_menu_description">その他のオプション</string>
+
+    <!-- Home settings: icon shape and icon pack. -->
+    <string name="icon_shape_title">アイコンの形</string>
+    <string name="icon_shape_system">システムのデフォルト</string>
+    <string name="icon_shape_circle">円</string>
+    <string name="icon_shape_square">四角</string>
+    <string name="icon_shape_arch">アーチ</string>
+    <string name="icon_shape_4_sided_cookie">クッキー(4)</string>
+    <string name="icon_shape_7_sided_cookie">クッキー(7)</string>
+    <string name="icon_shape_sunny">サニー</string>
+    <string name="icon_pack_title">アイコンパック</string>
+    <string name="icon_pack_system">システム</string>
 </resources>

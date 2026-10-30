@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Arrays for the custom home screen features (com.android.launcher3.custom). -->
 <resources>
     <!-- App drawer layout (CustomSettings.KEY_DRAWER_LAYOUT). -->
     <string-array name="drawer_layout_entries">
@@ -8,5 +9,25 @@
     <string-array name="drawer_layout_values" translatable="false">
         <item>grid</item>
         <item>list</item>
+    </string-array>
+
+    <!-- Icon shape setting; values are AppShapesProvider keys ("" = system default). -->
+    <string-array name="icon_shape_entries">
+        <item>@string/icon_shape_system</item>
+        <item>@string/icon_shape_circle</item>
+        <item>@string/icon_shape_square</item>
+        <item>@string/icon_shape_arch</item>
+        <item>@string/icon_shape_4_sided_cookie</item>
+        <item>@string/icon_shape_7_sided_cookie</item>
+        <item>@string/icon_shape_sunny</item>
+    </string-array>
+    <string-array name="icon_shape_values" translatable="false">
+        <item></item>
+        <item>circle</item>
+        <item>square</item>
+        <item>arch</item>
+        <item>4_sided_cookie</item>
+        <item>seven_sided_cookie</item>
+        <item>sunny</item>
     </string-array>
 </resources>

@@ -61,4 +61,16 @@
     <string name="drawer_layout_list">List</string>
     <!-- Content description of the 3-dot menu button next to the app drawer search bar. -->
     <string name="all_apps_menu_description">More options</string>
+
+    <!-- Home settings: icon shape and icon pack. -->
+    <string name="icon_shape_title">Icon shape</string>
+    <string name="icon_shape_system">System default</string>
+    <string name="icon_shape_circle">Circle</string>
+    <string name="icon_shape_square">Square</string>
+    <string name="icon_shape_arch">Arch</string>
+    <string name="icon_shape_4_sided_cookie">Cookie (4)</string>
+    <string name="icon_shape_7_sided_cookie">Cookie (7)</string>
+    <string name="icon_shape_sunny">Sunny</string>
+    <string name="icon_pack_title">Icon pack</string>
+    <string name="icon_pack_system">System</string>
 </resources>
