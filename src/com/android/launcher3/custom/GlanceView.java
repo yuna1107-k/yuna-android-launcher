@@ -78,8 +78,9 @@ public class GlanceView extends LinearLayout {
     public GlanceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOrientation(VERTICAL);
-        // Laid out like the Xperia home clock: everything centered under the clock.
-        setGravity(Gravity.CENTER);
+        // Laid out like the Xperia home clock: centered horizontally, pinned to the top so
+        // there's no gap above it.
+        setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         int pad = dp(8);
         setPadding(pad, 0, pad, 0);
 
@@ -98,15 +99,7 @@ public class GlanceView extends LinearLayout {
         mClock.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
         mClockWidget = new GlanceClockWidget(context);
 
-        LinearLayout row = new LinearLayout(context);
-        row.setOrientation(HORIZONTAL);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        LayoutParams rowLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-        rowLp.gravity = Gravity.CENTER_HORIZONTAL;
-        addView(row, rowLp);
-        mWeather = styled(new TextView(context), 17);
-        row.addView(mWeather);
+        // (The weather lives in the column next to the clock to keep the panel short.)
 
         // Right of the clock: date ('26 10/30 Fri) above the next alarm.
         LinearLayout side = new LinearLayout(context);
@@ -114,19 +107,21 @@ public class GlanceView extends LinearLayout {
         LayoutParams sideLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
         sideLp.setMarginStart(dp(10));
-        sideLp.bottomMargin = dp(6);
+        sideLp.bottomMargin = dp(2);
         mClockRow.addView(side, sideLp);
-        mDate = styled(new TextView(context), 15);
+        mDate = styled(new TextView(context), 13);
         side.addView(mDate);
-        mAlarm = styled(new TextView(context), 15);
+        mWeather = styled(new TextView(context), 13);
+        side.addView(mWeather);
+        mAlarm = styled(new TextView(context), 13);
         side.addView(mAlarm);
         mAlarm.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
 
-        mEvent = styled(new TextView(context), 15);
+        mEvent = styled(new TextView(context), 14);
         mEvent.setGravity(Gravity.CENTER);
         LayoutParams eventLp = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
-        eventLp.topMargin = dp(2);
+        eventLp.topMargin = 0;
         addView(mEvent, eventLp);
 
         OnClickListener openWeek = v -> onDetailsClicked();

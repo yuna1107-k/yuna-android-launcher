@@ -175,6 +175,12 @@
         <item name="android:windowNoTitle">true</item>
         <item name="preferenceTheme">@style/HomeSettings.PreferenceTheme</item>
         <item name="android:fontFamily">@font/mushin</item>
+        <!-- ListPreference dialogs are AppCompat dialogs; give them an AppCompat theme. -->
+        <item name="alertDialogTheme">@style/HomeSettings.AlertDialog</item>
+    </style>
+
+    <style name="HomeSettings.AlertDialog" parent="@style/Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:fontFamily">@font/mushin</item>
     </style>
 
     <style name="HomeSettings.PreferenceTheme" parent="@style/PreferenceThemeOverlay.v14.Material">

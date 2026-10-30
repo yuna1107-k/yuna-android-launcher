@@ -43,7 +43,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
     private static final String TAG = "CalendarPanel";
     private static final int DAYS = 7;
     private static final long DAY_MS = 24L * 60 * 60 * 1000;
-    private static final float MAX_HEIGHT_FRACTION = 0.75f;
+    private static final float MAX_HEIGHT_FRACTION = 0.5f;
     private static final float WIDTH_FRACTION = 0.9f;
     private static final long CLOSE_DURATION = 300;
 
@@ -101,7 +101,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
         handle.setBackground(handleBg);
         LayoutParams handleLp = new LayoutParams(dp(36), dp(4));
         handleLp.gravity = Gravity.CENTER_HORIZONTAL;
-        handleLp.bottomMargin = dp(12);
+        handleLp.bottomMargin = dp(8);
         sheet.addView(handle, handleLp);
 
 
@@ -114,8 +114,8 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
             }
         };
         mScroll.setClipToPadding(false);
-        // Only the navigation bar inset below the last day, no extra gap.
-        mScroll.setPadding(0, 0, 0, insets.bottom);
+        // Runs to the bottom edge; the last day only clears the navigation bar.
+        mScroll.setPadding(0, 0, 0, Math.max(0, insets.bottom - dp(10)));
         mDays = new LinearLayout(launcher);
         mDays.setOrientation(VERTICAL);
         mDays.setPadding(dp(12), 0, dp(12), 0);
@@ -175,26 +175,26 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
             List<CalendarRepository.Event> events, boolean today) {
         LinearLayout card = new LinearLayout(getContext());
         card.setOrientation(VERTICAL);
-        card.setPadding(dp(16), dp(12), dp(8), dp(12));
+        card.setPadding(dp(16), dp(8), dp(8), dp(8));
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(mCardColor);
         bg.setCornerRadius(dp(24));
         card.setBackground(bg);
         LayoutParams cardLp = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
-        cardLp.bottomMargin = dp(10);
+        cardLp.bottomMargin = dp(6);
         card.setLayoutParams(cardLp);
 
         // Day header: date, weather, add button
         LinearLayout header = new LinearLayout(getContext());
         header.setGravity(Gravity.CENTER_VERTICAL);
-        TextView date = text(label, 18, today ? mAccent : mOnSurface);
+        TextView date = text(label, 16, today ? mAccent : mOnSurface);
         header.addView(date, new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
         if (weather != null) {
             header.addView(text(getContext().getString(R.string.week_panel_weather,
                     weather.symbol(), weather.high, weather.low), 16, mOnSurfaceVariant));
         }
-        TextView add = text("＋", 22, mAccent);
+        TextView add = text("＋", 18, mAccent);
         add.setGravity(Gravity.CENTER);
         add.setContentDescription(getContext().getString(R.string.week_panel_add_event));
         GradientDrawable addBg = new GradientDrawable();
@@ -202,7 +202,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
         addBg.setColor(ColorUtils.setAlphaComponent(mAccent, 0x2A));
         add.setBackground(addBg);
         add.setOnClickListener(v -> addEvent(dayStart, today));
-        LayoutParams addLp = new LayoutParams(dp(40), dp(40));
+        LayoutParams addLp = new LayoutParams(dp(32), dp(32));
         addLp.setMarginStart(dp(12));
         header.addView(add, addLp);
         card.addView(header);
@@ -210,7 +210,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
         if (events.isEmpty()) {
             TextView none = text(getContext().getString(R.string.week_panel_no_events), 15,
                     mOnSurfaceVariant);
-            none.setPadding(0, dp(6), 0, 0);
+            none.setPadding(0, dp(2), 0, 0);
             card.addView(none);
         }
         for (CalendarRepository.Event e : events) {
@@ -222,7 +222,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
     private View eventRow(CalendarRepository.Event e) {
         LinearLayout row = new LinearLayout(getContext());
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(0, dp(8), dp(8), 0);
+        row.setPadding(0, dp(4), dp(8), 0);
 
         View dot = new View(getContext());
         GradientDrawable dotBg = new GradientDrawable();
@@ -241,7 +241,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
                 LayoutParams.WRAP_CONTENT);
         timeLp.setMarginEnd(dp(10));
         row.addView(timeView, timeLp);
-        row.addView(text(e.title, 16, mOnSurface),
+        row.addView(text(e.title, 15, mOnSurface),
                 new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
 
         row.setOnClickListener(v -> startSafely(new Intent(Intent.ACTION_VIEW,
