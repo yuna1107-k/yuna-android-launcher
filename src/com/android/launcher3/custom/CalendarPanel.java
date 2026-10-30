@@ -44,7 +44,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
     private static final int DAYS = 7;
     private static final long DAY_MS = 24L * 60 * 60 * 1000;
     private static final float MAX_HEIGHT_FRACTION = 0.75f;
-    private static final float WIDTH_FRACTION = 0.8f;
+    private static final float WIDTH_FRACTION = 0.9f;
     private static final long CLOSE_DURATION = 300;
 
     private final Launcher mLauncher;
@@ -90,7 +90,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
         float r = dp(28);
         sheetBg.setCornerRadii(new float[] {r, r, r, r, 0, 0, 0, 0});
         sheet.setBackground(sheetBg);
-        sheet.setPadding(0, dp(8), 0, insets.bottom);
+        sheet.setPadding(0, dp(8), 0, 0);
         sheet.setClickable(true);
 
         // Drag handle
@@ -114,7 +114,8 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
             }
         };
         mScroll.setClipToPadding(false);
-        mScroll.setPadding(0, 0, 0, dp(12));
+        // Only the navigation bar inset below the last day, no extra gap.
+        mScroll.setPadding(0, 0, 0, insets.bottom);
         mDays = new LinearLayout(launcher);
         mDays.setOrientation(VERTICAL);
         mDays.setPadding(dp(12), 0, dp(12), 0);
@@ -123,7 +124,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
                 LayoutParams.WRAP_CONTENT));
 
         mContent = sheet;
-        // Grows up from the bottom edge, about 80% of the screen width, centered.
+        // Grows up from the bottom edge (where the navigation bar is), 90% wide, centered.
         LayoutParams sheetLp = new LayoutParams(
                 Math.round(launcher.getDeviceProfile().widthPx * WIDTH_FRACTION),
                 LayoutParams.WRAP_CONTENT);
