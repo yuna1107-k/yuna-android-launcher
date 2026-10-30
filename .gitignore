@@ -9,7 +9,8 @@ WallpaperPicker/gen/
 WallpaperPicker/.project.properties
 bin/
 .idea/
-.local.properties
+.gradle/
+local.properties
 build/
 .DS_Store
 

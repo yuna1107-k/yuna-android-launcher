@@ -23,7 +23,7 @@ import android.content.Context;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
-import com.android.launcher3.util.Themes;
+import com.android.launcher3.custom.AllAppsBackground;
 import com.android.launcher3.views.ActivityContext;
 
 /**
@@ -104,6 +104,6 @@ public class AllAppsState extends LauncherState {
     public int getWorkspaceScrimColor(Launcher launcher) {
         return launcher.getDeviceProfile().isTablet
                 ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
-                : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
+                : AllAppsBackground.getScrimColor(launcher);
     }
 }

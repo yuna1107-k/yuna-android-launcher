@@ -1,0 +1,133 @@
+package com.android.launcher3.custom;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.android.launcher3.LauncherPrefs;
+import com.android.launcher3.model.LoaderTask;
+
+/**
+ * Preference keys and accessors for the custom home screen features.
+ */
+public final class CustomSettings {
+
+    /** Whether the search bar is shown on the first home screen page. */
+    public static final String KEY_SEARCH_BAR_ON_HOME = LoaderTask.SMARTSPACE_ON_HOME_SCREEN;
+
+    /** Whether the glance panel (date, weather, next event) is shown on the first page. */
+    public static final String KEY_GLANCE_ON_HOME = "pref_glance_on_home";
+
+    /** Top row of the search bar / glance panel on the first page. */
+    public static final String KEY_PINNED_ITEM_ROW = "pref_pinned_item_row";
+
+    /** App widget used as the clock in the glance panel. */
+    public static final String KEY_GLANCE_CLOCK_WIDGET = "pref_glance_clock_widget";
+
+    /** Whether swiping down on the home screen opens the notification shade. */
+    public static final String KEY_SWIPE_DOWN_NOTIFICATIONS = "pref_swipe_down_notifications";
+
+    /** Whether Google Discover is shown on the screen left of the home screen. */
+    public static final String KEY_DISCOVER = "pref_enable_minus_one";
+
+    /** Icon size as a percentage of the grid's default size. */
+    public static final String KEY_ICON_SIZE = "pref_icon_size_percent";
+    public static final int ICON_SIZE_DEFAULT = 100;
+    public static final int ICON_SIZE_MIN = 70;
+    public static final int ICON_SIZE_MAX = 130;
+
+    private CustomSettings() { }
+
+    /** Opens Home settings. */
+    public static void openSettings(Context context) {
+        context.startActivity(new android.content.Intent(
+                android.content.Intent.ACTION_APPLICATION_PREFERENCES)
+                .setPackage(context.getPackageName())
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                        | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    }
+
+    /** Opacity of the app drawer background, in percent. */
+    public static final String KEY_DRAWER_OPACITY = "pref_drawer_opacity";
+    public static final int DRAWER_OPACITY_DEFAULT = -1; // use the built-in default
+
+    /** Returns the user's drawer opacity (0..1), or a negative value for the default. */
+    public static float getDrawerOpacity(Context context) {
+        int percent = prefs(context).getInt(KEY_DRAWER_OPACITY, DRAWER_OPACITY_DEFAULT);
+        return percent < 0 ? -1f : Math.max(0, Math.min(100, percent)) / 100f;
+    }
+
+    /** Returns the user's icon scale, e.g. 1.1 for 110%. */
+    public static float getIconScale(Context context) {
+        int percent = prefs(context).getInt(KEY_ICON_SIZE, ICON_SIZE_DEFAULT);
+        percent = Math.max(ICON_SIZE_MIN, Math.min(ICON_SIZE_MAX, percent));
+        return percent / 100f;
+    }
+
+    /** Returns a copy of {@code sizes} multiplied by the user's icon scale. */
+    public static float[] scaleIconSizes(Context context, float[] sizes) {
+        float scale = getIconScale(context);
+        float[] scaled = new float[sizes.length];
+        for (int i = 0; i < sizes.length; i++) {
+            scaled[i] = sizes[i] * scale;
+        }
+        return scaled;
+    }
+
+    private static SharedPreferences prefs(Context context) {
+        return LauncherPrefs.getPrefs(context);
+    }
+
+    public static void setSearchBarOnHome(Context context, boolean show) {
+        prefs(context).edit().putBoolean(KEY_SEARCH_BAR_ON_HOME, show).apply();
+    }
+
+    public static boolean isSearchBarOnHome(Context context) {
+        return prefs(context).getBoolean(KEY_SEARCH_BAR_ON_HOME, true);
+    }
+
+    public static void setGlanceOnHome(Context context, boolean show) {
+        prefs(context).edit().putBoolean(KEY_GLANCE_ON_HOME, show).apply();
+    }
+
+    public static boolean isGlanceOnHome(Context context) {
+        return prefs(context).getBoolean(KEY_GLANCE_ON_HOME, true);
+    }
+
+    /** Whether the first page has a pinned item (search bar and/or glance panel) at the top. */
+    public static boolean isFirstPagePinnedItemEnabled(Context context) {
+        return isSearchBarOnHome(context) || isGlanceOnHome(context);
+    }
+
+    /** Number of rows the first page pinned item takes: 2 for the glance panel, 1 for search. */
+    public static int getFirstPagePinnedItemRows(Context context) {
+        int rows = (isGlanceOnHome(context) ? 2 : 0) + (isSearchBarOnHome(context) ? 1 : 0);
+        return Math.max(1, rows);
+    }
+
+    /** Top row of the first page pinned item, chosen by the user, within a grid of numRows. */
+    public static int getFirstPagePinnedItemRow(Context context, int numRows) {
+        int max = Math.max(0, numRows - getFirstPagePinnedItemRows(context));
+        return Math.max(0, Math.min(max, prefs(context).getInt(KEY_PINNED_ITEM_ROW, 0)));
+    }
+
+    public static void setFirstPagePinnedItemRow(Context context, int row) {
+        prefs(context).edit().putInt(KEY_PINNED_ITEM_ROW, Math.max(0, row)).apply();
+    }
+
+    /** App widget id used as the glance panel clock, or INVALID_APPWIDGET_ID (0) for built-in. */
+    public static int getGlanceClockWidgetId(Context context) {
+        return prefs(context).getInt(KEY_GLANCE_CLOCK_WIDGET, 0);
+    }
+
+    public static void setGlanceClockWidgetId(Context context, int widgetId) {
+        prefs(context).edit().putInt(KEY_GLANCE_CLOCK_WIDGET, widgetId).apply();
+    }
+
+    public static boolean isSwipeDownNotificationsEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_SWIPE_DOWN_NOTIFICATIONS, true);
+    }
+
+    public static boolean isDiscoverEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_DISCOVER, true);
+    }
+}

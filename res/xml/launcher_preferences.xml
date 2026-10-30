@@ -18,36 +18,131 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res-auto">
 
-    <com.android.launcher3.settings.NotificationDotsPreference
-        android:key="pref_icon_badging"
-        android:title="@string/notification_dots_title"
-        android:persistent="false"
-        android:widgetLayout="@layout/notification_pref_warning" />
+    <!-- ホーム画面 -->
+    <PreferenceCategory
+        android:title="@string/settings_category_home"
+        android:iconSpaceReserved="false">
 
-    <!--
-      LAUNCHER_ADD_NEW_APPS_TO_HOME_SCREEN_ENABLED(613)
-      LAUNCHER_ADD_NEW_APPS_TO_HOME_SCREEN_DISABLED(614)
-    -->
-    <SwitchPreference
-        android:key="pref_add_icon_to_home"
-        android:title="@string/auto_add_shortcuts_label"
-        android:summary="@string/auto_add_shortcuts_description"
-        android:defaultValue="true"
-        android:persistent="true"
-        launcher:logIdOn="613"
-        launcher:logIdOff="614" />
+        <SwitchPreference
+            android:key="pref_smartspace_home_screen"
+            android:title="@string/search_bar_pref_title"
+            android:summary="@string/search_bar_pref_summary"
+            android:defaultValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
 
-    <!--
-      LAUNCHER_HOME_SCREEN_ROTATION_ENABLED(615)
-      LAUNCHER_HOME_SCREEN_ROTATION_DISABLED(616)
-    -->
-    <SwitchPreference
-        android:key="pref_allowRotation"
-        android:title="@string/allow_rotation_title"
-        android:summary="@string/allow_rotation_desc"
-        android:defaultValue="false"
-        android:persistent="true"
-        launcher:logIdOn="615"
-        launcher:logIdOff="616" />
+        <SwitchPreference
+            android:key="pref_enable_minus_one"
+            android:title="@string/discover_pref_title"
+            android:summary="@string/discover_pref_summary"
+            android:defaultValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
 
+        <!--
+          LAUNCHER_ADD_NEW_APPS_TO_HOME_SCREEN_ENABLED(613)
+          LAUNCHER_ADD_NEW_APPS_TO_HOME_SCREEN_DISABLED(614)
+        -->
+        <SwitchPreference
+            android:key="pref_add_icon_to_home"
+            android:title="@string/auto_add_shortcuts_label"
+            android:summary="@string/auto_add_shortcuts_description"
+            android:defaultValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false"
+            launcher:logIdOn="613"
+            launcher:logIdOff="614" />
+
+        <!--
+          LAUNCHER_HOME_SCREEN_ROTATION_ENABLED(615)
+          LAUNCHER_HOME_SCREEN_ROTATION_DISABLED(616)
+        -->
+        <SwitchPreference
+            android:key="pref_allowRotation"
+            android:title="@string/allow_rotation_title"
+            android:summary="@string/allow_rotation_desc"
+            android:defaultValue="false"
+            android:persistent="true"
+            android:iconSpaceReserved="false"
+            launcher:logIdOn="615"
+            launcher:logIdOff="616" />
+    </PreferenceCategory>
+
+    <!-- ひと目で確認パネル -->
+    <PreferenceCategory
+        android:title="@string/settings_category_glance"
+        android:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="pref_glance_on_home"
+            android:title="@string/glance_pref_title"
+            android:summary="@string/glance_pref_summary"
+            android:defaultValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="pref_glance_clock_picker"
+            android:title="@string/glance_change_clock"
+            android:summary="@string/glance_clock_summary"
+            android:dependency="pref_glance_on_home"
+            android:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <!-- アイコン -->
+    <PreferenceCategory
+        android:title="@string/settings_category_icons"
+        android:iconSpaceReserved="false">
+
+        <SeekBarPreference
+            android:key="pref_icon_size_percent"
+            android:title="@string/icon_size_title"
+            android:summary="@string/icon_size_summary"
+            android:defaultValue="100"
+            android:max="130"
+            launcher:min="70"
+            launcher:seekBarIncrement="5"
+            launcher:showSeekBarValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
+
+        <com.android.launcher3.settings.NotificationDotsPreference
+            android:key="pref_icon_badging"
+            android:title="@string/notification_dots_title"
+            android:persistent="false"
+            android:iconSpaceReserved="false"
+            android:widgetLayout="@layout/notification_pref_warning" />
+    </PreferenceCategory>
+
+    <!-- アプリ一覧 -->
+    <PreferenceCategory
+        android:title="@string/settings_category_drawer"
+        android:iconSpaceReserved="false">
+
+        <SeekBarPreference
+            android:key="pref_drawer_opacity"
+            android:title="@string/drawer_opacity_title"
+            android:summary="@string/drawer_opacity_summary"
+            android:defaultValue="68"
+            android:max="100"
+            launcher:min="0"
+            launcher:seekBarIncrement="5"
+            launcher:showSeekBarValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <!-- ジェスチャー -->
+    <PreferenceCategory
+        android:title="@string/settings_category_gestures"
+        android:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="pref_swipe_down_notifications"
+            android:title="@string/swipe_down_pref_title"
+            android:summary="@string/swipe_down_pref_summary"
+            android:defaultValue="true"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
+    </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

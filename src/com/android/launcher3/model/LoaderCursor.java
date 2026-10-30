@@ -44,6 +44,7 @@ import com.android.launcher3.Workspace;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger.RestoreError;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.CustomSettings;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.data.AppInfo;
@@ -560,8 +561,9 @@ public class LoaderCursor extends CursorWrapper {
                 // occupied (if the feature is enabled) in order to account for the search
                 // container.
                 int spanX = mIDP.numSearchContainerColumns;
-                int spanY = 1;
-                screen.markCells(0, 0, spanX, spanY, true);
+                int spanY = CustomSettings.getFirstPagePinnedItemRows(mContext);
+                int row = CustomSettings.getFirstPagePinnedItemRow(mContext, countY);
+                screen.markCells(0, row, spanX, spanY, true);
             }
             mOccupied.put(item.screenId, screen);
         }

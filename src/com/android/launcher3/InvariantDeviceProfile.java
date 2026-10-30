@@ -53,6 +53,7 @@ import androidx.annotation.XmlRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.CustomSettings;
 import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.DeviceGridState;
@@ -445,7 +446,8 @@ public class InvariantDeviceProfile implements SafeCloseable {
 
         inlineNavButtonsEndSpacing = closestProfile.inlineNavButtonsEndSpacing;
 
-        iconSize = displayOption.iconSizes;
+        // Apply the icon size chosen in Home settings.
+        iconSize = CustomSettings.scaleIconSizes(context, displayOption.iconSizes);
         float maxIconSize = iconSize[0];
         for (int i = 1; i < iconSize.length; i++) {
             maxIconSize = Math.max(maxIconSize, iconSize[i]);
@@ -476,7 +478,7 @@ public class InvariantDeviceProfile implements SafeCloseable {
 
         allAppsCellSize = displayOption.allAppsCellSize;
         allAppsBorderSpaces = displayOption.allAppsBorderSpaces;
-        allAppsIconSize = displayOption.allAppsIconSizes;
+        allAppsIconSize = CustomSettings.scaleIconSizes(context, displayOption.allAppsIconSizes);
         allAppsIconTextSize = displayOption.allAppsIconTextSizes;
 
         inlineQsb = closestProfile.inlineQsb;

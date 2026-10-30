@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings for the custom home screen features (com.android.launcher3.custom). -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Long-press menu item that removes the search bar from the home screen. -->
+    <string name="search_bar_remove">Remove</string>
+    <!-- Home settings: toggle for the search bar on the home screen. -->
+    <string name="search_bar_pref_title">Show search bar</string>
+    <string name="search_bar_pref_summary">You can also long-press the search bar to remove it</string>
+
+    <!-- Home settings: swipe down on the home screen to open notifications. -->
+    <string name="swipe_down_pref_title">Swipe down for notifications</string>
+    <string name="swipe_down_pref_summary">Swipe down on the home screen to open the notification shade</string>
+
+    <!-- Home settings: icon size slider. -->
+    <string name="icon_size_title">Icon size</string>
+    <string name="icon_size_summary">Percentage of the default size (100)</string>
+
+    <!-- Home settings: Google Discover on the screen left of the home screen. -->
+    <string name="discover_pref_title">Show Google Discover</string>
+    <string name="discover_pref_summary">Swipe right on the first home screen page</string>
+    <!-- Glance panel at the top of the first home page. -->
+    <string name="glance_pref_title">Show At a Glance</string>
+    <string name="glance_pref_summary">Clock, date, weather and your next event at the top of the home screen</string>
+    <string name="glance_hide">Hide</string>
+    <string name="glance_no_events">No more events today</string>
+    <string name="glance_grant_permission">Tap to show weather and events</string>
+    <string name="glance_event_now">Now · <xliff:g id="title" example="Meeting">%1$s</xliff:g></string>
+    <string name="glance_event_in_minutes">In <xliff:g id="minutes" example="15">%1$d</xliff:g> min · <xliff:g id="title" example="Meeting">%2$s</xliff:g></string>
+    <string name="glance_event_tomorrow">Tomorrow <xliff:g id="time" example="10:00">%1$s</xliff:g>  <xliff:g id="title" example="Meeting">%2$s</xliff:g></string>
+    <string name="glance_event_all_day">All day · <xliff:g id="title" example="Holiday">%1$s</xliff:g></string>
+    <string name="glance_weather"><xliff:g id="symbol" example="☀️">%1$s</xliff:g> <xliff:g id="temp" example="18">%2$d</xliff:g>°  <xliff:g id="high" example="22">%3$d</xliff:g>°/<xliff:g id="low" example="12">%4$d</xliff:g>°</string>
+    <string name="glance_weather_query">weather</string>
+
+    <!-- Settings categories, clock picker, position adjustment, week panel, drawer. -->
+    <string name="settings_category_home">Home screen</string>
+    <string name="settings_category_glance">At a Glance</string>
+    <string name="settings_category_icons">Icons</string>
+    <string name="settings_category_drawer">App drawer</string>
+    <string name="settings_category_gestures">Gestures</string>
+    <string name="glance_change_clock">Change clock</string>
+    <string name="glance_clock_summary">Use the built-in clock or a clock widget from another app</string>
+    <string name="glance_clock_title">Choose a clock</string>
+    <string name="glance_clock_builtin">Built-in clock</string>
+    <string name="pinned_adjust_position">Adjust position</string>
+    <string name="pinned_move_up">Move up</string>
+    <string name="pinned_move_down">Move down</string>
+    <string name="pinned_move_done">Done</string>
+    <string name="week_panel_title">Next 7 days</string>
+    <string name="week_panel_add_event">Add event</string>
+    <string name="week_panel_no_events">No events</string>
+    <string name="week_panel_all_day">All day</string>
+    <string name="drawer_opacity_title">Background opacity</string>
+    <string name="drawer_opacity_summary">How solid the app drawer background is (%)</string>
+    <string name="week_panel_today">Today · <xliff:g id="date" example="Oct 30">%1$s</xliff:g></string>
+    <string name="week_panel_tomorrow">Tomorrow · <xliff:g id="date" example="Oct 31">%1$s</xliff:g></string>
+    <string name="week_panel_weather"><xliff:g id="symbol" example="☀️">%1$s</xliff:g> <xliff:g id="high" example="22">%2$d</xliff:g>°/<xliff:g id="low" example="12">%3$d</xliff:g>°</string>
+</resources>

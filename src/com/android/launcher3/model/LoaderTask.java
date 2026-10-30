@@ -60,6 +60,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import com.android.launcher3.Flags;
+import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherPrefs;
@@ -67,6 +68,8 @@ import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.CustomSettings;
+import com.android.launcher3.custom.PinnedAreaRelocator;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderGridOrganizer;
 import com.android.launcher3.folder.FolderNameInfos;
@@ -409,6 +412,11 @@ public class LoaderTask implements Runnable {
             LoaderMemoryLogger memoryLogger,
             @Nullable LauncherRestoreEventLogger restoreEventLogger
     ) {
+        // Set before loading: item placement checks depend on whether the search bar is shown.
+        mBgDataModel.isFirstPagePinnedItemEnabled = FeatureFlags.QSB_ON_FIRST_SCREEN
+                && (!enableSmartspaceRemovalToggle()
+                || CustomSettings.isFirstPagePinnedItemEnabled(mApp.getContext()));
+
         Trace.beginSection("LoadWorkspace");
         try {
             loadWorkspaceImpl(allDeepShortcuts, selection, memoryLogger, restoreEventLogger);
@@ -416,10 +424,6 @@ public class LoaderTask implements Runnable {
             Trace.endSection();
         }
         logASplit("loadWorkspace finished");
-
-        mBgDataModel.isFirstPagePinnedItemEnabled = FeatureFlags.QSB_ON_FIRST_SCREEN
-                && (!enableSmartspaceRemovalToggle() || LauncherPrefs.getPrefs(
-                mApp.getContext()).getBoolean(SMARTSPACE_ON_HOME_SCREEN, true));
     }
 
     private void loadWorkspaceImpl(
@@ -443,6 +447,14 @@ public class LoaderTask implements Runnable {
         }
         Log.d(TAG, "loadWorkspace: loading default favorites if necessary");
         dbController.loadDefaultFavoritesIfNecessary();
+        if (mBgDataModel.isFirstPagePinnedItemEnabled
+                && !Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET) {
+            // Make room for the search bar / glance panel instead of dropping items there.
+            InvariantDeviceProfile idp = mApp.getInvariantDeviceProfile();
+            PinnedAreaRelocator.relocate(dbController, idp,
+                    CustomSettings.getFirstPagePinnedItemRow(context, idp.numRows),
+                    CustomSettings.getFirstPagePinnedItemRows(context));
+        }
 
         synchronized (mBgDataModel) {
             mBgDataModel.clear();

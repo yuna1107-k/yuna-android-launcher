@@ -46,6 +46,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
 
+import com.android.launcher3.custom.CustomSettings;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.icons.IconProvider;
@@ -157,7 +158,11 @@ public class LauncherAppState implements SafeCloseable {
                         @Override
                         public void onSharedPreferenceChanged(
                                 SharedPreferences sharedPreferences, String key) {
-                            if (SMARTSPACE_ON_HOME_SCREEN.equals(key)) {
+                            // Search bar / glance panel toggled: the loader makes room for
+                            // them (see PinnedAreaRelocator).
+                            if (SMARTSPACE_ON_HOME_SCREEN.equals(key)
+                                    || CustomSettings.KEY_GLANCE_ON_HOME.equals(key)
+                                    || CustomSettings.KEY_PINNED_ITEM_ROW.equals(key)) {
                                 mModel.forceReload();
                             }
                         }

@@ -281,7 +281,8 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
                 .putExtra(EXTRA_WALLPAPER_LAUNCH_SOURCE, "app_launched_launcher")
                 .putExtra(EXTRA_WALLPAPER_FLAVOR, "focus_wallpaper");
         String pickerPackage = launcher.getString(R.string.wallpaper_picker_package);
-        if (!TextUtils.isEmpty(pickerPackage)) {
+        if (!TextUtils.isEmpty(pickerPackage) && new Intent(intent).setPackage(pickerPackage)
+                .resolveActivity(launcher.getPackageManager()) != null) {
             intent.setPackage(pickerPackage);
         }
         return launcher.startActivitySafely(v, intent, placeholderInfo(intent)) != null;

@@ -81,6 +81,8 @@ import com.android.launcher3.celllayout.CellLayoutLayoutParams;
 import com.android.launcher3.celllayout.CellPosMapper;
 import com.android.launcher3.celllayout.CellPosMapper.CellPos;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.CustomSettings;
+import com.android.launcher3.custom.FirstPagePinnedView;
 import com.android.launcher3.debug.TestEvent;
 import com.android.launcher3.debug.TestEventEmitter;
 import com.android.launcher3.dot.FolderDotInfo;
@@ -259,6 +261,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     private float mXDown;
     private float mYDown;
     private View mFirstPagePinnedItem;
+    // Keeps the search bar view (and its fragment) while the search bar is turned off.
+    private View mCachedFirstPagePinnedItem;
     private boolean mIsEventOverFirstPagePinnedItem;
 
     final static float START_DAMPING_TOUCH_SLOP_ANGLE = (float) Math.PI / 6;
@@ -615,16 +619,32 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
         // Add the first page
         CellLayout firstPage = insertNewWorkspaceScreen(Workspace.FIRST_SCREEN_ID, getChildCount());
+        if (mFirstPagePinnedItem == null && mCachedFirstPagePinnedItem != null) {
+            // Reuse the view after the search bar was turned off and on again; inflating it
+            // again would add a second QsbFragment with the same tag and crash.
+            mFirstPagePinnedItem = mCachedFirstPagePinnedItem;
+            if (mFirstPagePinnedItem.getParent() instanceof ViewGroup parent) {
+                parent.removeView(mFirstPagePinnedItem);
+            }
+        }
         if (mFirstPagePinnedItem == null) {
             // In transposed layout, we add the first page pinned widget in the Grid.
             // As workspace does not touch the edges, we do not need a full
             // width first page pinned item.
             mFirstPagePinnedItem = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace, firstPage, false);
+                    .inflate(R.layout.first_page_pinned_item, firstPage, false);
+            mCachedFirstPagePinnedItem = mFirstPagePinnedItem;
+        }
+        // Glance panel + search bar, as enabled in Home settings.
+        if (mFirstPagePinnedItem instanceof FirstPagePinnedView pinnedView) {
+            pinnedView.update();
         }
 
         int cellHSpan = mLauncher.getDeviceProfile().inv.numSearchContainerColumns;
-        CellLayoutLayoutParams lp = new CellLayoutLayoutParams(0, 0, cellHSpan, 1);
+        int pinnedRow = CustomSettings.getFirstPagePinnedItemRow(getContext(),
+                mLauncher.getDeviceProfile().inv.numRows);
+        CellLayoutLayoutParams lp = new CellLayoutLayoutParams(0, pinnedRow, cellHSpan,
+                CustomSettings.getFirstPagePinnedItemRows(getContext()));
         lp.canReorder = false;
         if (!firstPage.addViewToCellLayout(
                 mFirstPagePinnedItem, 0, R.id.search_container_workspace, lp, true)) {
@@ -2244,7 +2264,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     private Runnable getWidgetResizeFrameRunnable(DragOptions options,
             LauncherAppWidgetHostView hostView, CellLayout cellLayout) {
         AppWidgetProviderInfo pInfo = hostView.getAppWidgetInfo();
-        if (pInfo != null && pInfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+        // All widgets are resizable (see AppWidgetResizeFrame).
+        if (pInfo != null) {
             return () -> {
                 if (!isPageInTransition()) {
                     AppWidgetResizeFrame.showForWidget(hostView, cellLayout);

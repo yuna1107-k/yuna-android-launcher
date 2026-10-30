@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="search_bar_remove">削除</string>
+    <string name="search_bar_pref_title">検索バーを表示</string>
+    <string name="search_bar_pref_summary">ホーム画面の検索バーを長押ししても削除できます</string>
+
+    <string name="swipe_down_pref_title">下にスワイプで通知を表示</string>
+    <string name="swipe_down_pref_summary">ホーム画面で下にスワイプすると通知パネルを開きます</string>
+
+    <!-- Home settings: icon size slider. -->
+    <string name="icon_size_title">アイコンのサイズ</string>
+    <string name="icon_size_summary">標準サイズに対する割合（%）。標準は100</string>
+
+    <!-- Home settings: Google Discover on the screen left of the home screen. -->
+    <string name="discover_pref_title">Google Discover を表示</string>
+    <string name="discover_pref_summary">ホーム画面の最初のページで右にスワイプ</string>
+
+    <string name="glance_pref_title">ひと目で確認パネルを表示</string>
+    <string name="glance_pref_summary">ホーム画面上部に時計・日付・天気・次の予定を表示</string>
+    <string name="glance_hide">非表示</string>
+    <string name="glance_no_events">今日の予定はありません</string>
+    <string name="glance_grant_permission">タップして天気と予定を表示</string>
+    <string name="glance_event_now">進行中 · <xliff:g id="title" example="会議">%1$s</xliff:g></string>
+    <string name="glance_event_in_minutes">あと<xliff:g id="minutes" example="15">%1$d</xliff:g>分 · <xliff:g id="title" example="会議">%2$s</xliff:g></string>
+    <string name="glance_event_tomorrow">明日 <xliff:g id="time" example="10:00">%1$s</xliff:g>  <xliff:g id="title" example="会議">%2$s</xliff:g></string>
+    <string name="glance_event_all_day">終日 · <xliff:g id="title" example="祝日">%1$s</xliff:g></string>
+    <string name="glance_weather"><xliff:g id="symbol" example="☀️">%1$s</xliff:g> <xliff:g id="temp" example="18">%2$d</xliff:g>°  <xliff:g id="high" example="22">%3$d</xliff:g>°/<xliff:g id="low" example="12">%4$d</xliff:g>°</string>
+    <string name="glance_weather_query">天気</string>
+
+    <!-- Settings categories, clock picker, position adjustment, week panel, drawer. -->
+    <string name="settings_category_home">ホーム画面</string>
+    <string name="settings_category_glance">ひと目で確認パネル</string>
+    <string name="settings_category_icons">アイコン</string>
+    <string name="settings_category_drawer">アプリ一覧</string>
+    <string name="settings_category_gestures">ジェスチャー</string>
+    <string name="glance_change_clock">時計を変更</string>
+    <string name="glance_clock_summary">標準の時計、または他のアプリの時計ウィジェットを使用</string>
+    <string name="glance_clock_title">時計を選択</string>
+    <string name="glance_clock_builtin">標準の時計</string>
+    <string name="pinned_adjust_position">位置を調整</string>
+    <string name="pinned_move_up">上へ移動</string>
+    <string name="pinned_move_down">下へ移動</string>
+    <string name="pinned_move_done">完了</string>
+    <string name="week_panel_title">今後1週間</string>
+    <string name="week_panel_add_event">予定を追加</string>
+    <string name="week_panel_no_events">予定はありません</string>
+    <string name="week_panel_all_day">終日</string>
+    <string name="drawer_opacity_title">背景の不透明度</string>
+    <string name="drawer_opacity_summary">アプリ一覧の背景の濃さ（%）</string>
+    <string name="week_panel_today">今日 · <xliff:g id="date" example="10月30日(金)">%1$s</xliff:g></string>
+    <string name="week_panel_tomorrow">明日 · <xliff:g id="date" example="10月31日(土)">%1$s</xliff:g></string>
+    <string name="week_panel_weather"><xliff:g id="symbol" example="☀️">%1$s</xliff:g> <xliff:g id="high" example="22">%2$d</xliff:g>°/<xliff:g id="low" example="12">%3$d</xliff:g>°</string>
+</resources>

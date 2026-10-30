@@ -179,6 +179,9 @@ import com.android.launcher3.celllayout.CellPosMapper.CellPos;
 import com.android.launcher3.celllayout.CellPosMapper.TwoPanelCellPosMapper;
 import com.android.launcher3.compat.AccessibilityManagerCompat;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.AllAppsBackground;
+import com.android.launcher3.custom.StatusBarSwipeController;
+import com.android.launcher3.custom.DiscoverOverlay;
 import com.android.launcher3.debug.TestEvent;
 import com.android.launcher3.debug.TestEventEmitter;
 import com.android.launcher3.dot.DotInfo;
@@ -396,6 +399,8 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     protected LauncherOverlayManager mOverlayManager;
     protected DragController mDragController;
+    @Nullable
+    private AllAppsBackground mAllAppsBackground;
     // If true, overlay callbacks are deferred
     private boolean mDeferOverlayCallbacks;
     private final Runnable mDeferredOverlayCallbacks = this::checkIfOverlayStillDeferred;
@@ -702,7 +707,8 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     protected LauncherOverlayManager getDefaultOverlay() {
-        return new LauncherOverlayManager() { };
+        // Google Discover on the screen left of the home screen.
+        return new DiscoverOverlay(this);
     }
 
     @Override
@@ -1105,6 +1111,10 @@ public class Launcher extends StatefulActivity<LauncherState>
             mOverlayManager.onActivityStopped();
         }
         hideKeyboard();
+        // After opening an app from the app drawer, come back to the home screen.
+        if (!isChangingConfigurations() && isInState(ALL_APPS)) {
+            getStateManager().goToState(NORMAL, false /* animated */);
+        }
         logStopAndResume(false /* isResume */);
         mAppWidgetHolder.setActivityStarted(false);
         NotificationListener.removeNotificationsChangedListener(getPopupDataProvider());
@@ -2821,7 +2831,8 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     public TouchController[] createTouchControllers() {
-        return new TouchController[] {getDragController(), new AllAppsSwipeController(this)};
+        return new TouchController[] {getDragController(), new AllAppsSwipeController(this),
+                new StatusBarSwipeController(this)};
     }
 
     public void onDragLayerHierarchyChanged() {
@@ -2913,7 +2924,10 @@ public class Launcher extends StatefulActivity<LauncherState>
      * @param progress Transition progress from 0 to 1; where 0 => home and 1 => all apps.
      */
     public void onAllAppsTransition(float progress) {
-        // No-Op
+        if (mAllAppsBackground == null) {
+            mAllAppsBackground = new AllAppsBackground(this);
+        }
+        mAllAppsBackground.setProgress(progress);
     }
 
     /**

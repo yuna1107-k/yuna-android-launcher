@@ -25,8 +25,10 @@ import static com.android.launcher3.BuildConfig.IS_STUDIO_BUILD;
 import static com.android.launcher3.InvariantDeviceProfile.TYPE_MULTI_DISPLAY;
 import static com.android.launcher3.InvariantDeviceProfile.TYPE_TABLET;
 import static com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -47,6 +49,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.preference.PreferenceScreen;
@@ -56,6 +59,7 @@ import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Flags;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherFiles;
+import com.android.launcher3.custom.CustomSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.states.RotationHelper;
 import com.android.launcher3.util.DisplayController;
@@ -200,12 +204,7 @@ public class SettingsActivity extends FragmentActivity
             setPreferencesFromResource(R.xml.launcher_preferences, rootKey);
 
             PreferenceScreen screen = getPreferenceScreen();
-            for (int i = screen.getPreferenceCount() - 1; i >= 0; i--) {
-                Preference preference = screen.getPreference(i);
-                if (!initPreference(preference)) {
-                    screen.removePreference(preference);
-                }
-            }
+            initPreferenceGroup(screen);
 
             // If the target preference is not in the current preference screen, find the parent
             // preference screen that contains the target preference and set it as the preference
@@ -226,6 +225,21 @@ public class SettingsActivity extends FragmentActivity
 
             if (getActivity() != null && !TextUtils.isEmpty(getPreferenceScreen().getTitle())) {
                 getActivity().setTitle(getPreferenceScreen().getTitle());
+            }
+        }
+
+        /** Initializes preferences, including those inside categories; drops empty ones. */
+        private void initPreferenceGroup(PreferenceGroup group) {
+            for (int i = group.getPreferenceCount() - 1; i >= 0; i--) {
+                Preference preference = group.getPreference(i);
+                if (preference instanceof PreferenceCategory category) {
+                    initPreferenceGroup(category);
+                    if (category.getPreferenceCount() == 0) {
+                        group.removePreference(category);
+                    }
+                } else if (preference.getKey() != null && !initPreference(preference)) {
+                    group.removePreference(preference);
+                }
             }
         }
 
@@ -306,6 +320,19 @@ public class SettingsActivity extends FragmentActivity
                     }
                     // Initialize the UI once
                     preference.setDefaultValue(RotationHelper.getAllowRotationDefaultValue(info));
+                    return true;
+                case "pref_glance_clock_picker":
+                    preference.setIntent(new Intent(getContext(),
+                            com.android.launcher3.custom.ClockWidgetPickerActivity.class));
+                    return true;
+                case CustomSettings.KEY_ICON_SIZE:
+                    // Rebuild the device profile once the new value has been saved.
+                    preference.setOnPreferenceChangeListener((pref, newValue) -> {
+                        Context appContext = getContext().getApplicationContext();
+                        MAIN_EXECUTOR.post(() -> InvariantDeviceProfile.INSTANCE.get(appContext)
+                                .onConfigChanged(appContext));
+                        return true;
+                    });
                     return true;
                 case DEVELOPER_OPTIONS_KEY:
                     if (IS_STUDIO_BUILD) {

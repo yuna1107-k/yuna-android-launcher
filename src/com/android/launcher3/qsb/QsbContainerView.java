@@ -36,6 +36,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -44,11 +45,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.android.launcher3.CheckLongPressHelper;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.SearchBarOptions;
 import com.android.launcher3.graphics.FragmentWithPreview;
 import com.android.launcher3.widget.util.WidgetSizes;
 
@@ -142,6 +145,28 @@ public class QsbContainerView extends FrameLayout {
 
     public QsbContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    // Long-pressing the search bar opens a menu that can remove it from the home screen.
+    private final CheckLongPressHelper mLongPressHelper =
+            new CheckLongPressHelper(this, SearchBarOptions::show);
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        mLongPressHelper.onTouchEvent(ev);
+        return mLongPressHelper.hasPerformedLongPress() || super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        mLongPressHelper.onTouchEvent(ev);
+        return mLongPressHelper.hasPerformedLongPress() || super.onTouchEvent(ev);
+    }
+
+    @Override
+    public void cancelLongPress() {
+        super.cancelLongPress();
+        mLongPressHelper.cancelLongPress();
     }
 
     @Override

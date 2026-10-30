@@ -27,6 +27,8 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowShowWallpaper">true</item>
+        <!-- Launcher-wide font: 無心 (Mushin), see third_party/mushin. -->
+        <item name="android:fontFamily">@font/mushin</item>
     </style>
 
     <style name="DynamicColorsBaseLauncherTheme" parent="@style/BaseLauncherTheme">
@@ -172,6 +174,7 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="preferenceTheme">@style/HomeSettings.PreferenceTheme</item>
+        <item name="android:fontFamily">@font/mushin</item>
     </style>
 
     <style name="HomeSettings.PreferenceTheme" parent="@style/PreferenceThemeOverlay.v14.Material">
@@ -290,6 +293,7 @@
     </style>
 
     <style name="FastScrollerPopup" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle">
+        <item name="android:fontFamily">@font/mushin</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:minWidth">@dimen/fastscroll_popup_width</item>
         <item name="android:layout_height">@dimen/fastscroll_popup_height</item>
@@ -304,7 +308,9 @@
         <item name="android:importantForAccessibility">no</item>
     </style>
 
-    <style name="BaseIconRoot" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"/>
+    <style name="BaseIconRoot" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle">
+        <item name="android:fontFamily">@font/mushin</item>
+    </style>
 
     <style name="BaseIconUnBounded" parent="BaseIconRoot">
         <item name="android:layout_width">match_parent</item>
@@ -361,6 +367,7 @@
 
     <!-- Drop targets -->
     <style name="DropTargetButtonBase" parent="@android:style/TextAppearance.DeviceDefault.Medium">
+        <item name="android:fontFamily">@font/mushin</item>
         <item name="android:drawablePadding">@dimen/drop_target_button_drawable_padding</item>
         <item name="android:padding">14dp</item>
         <item name="android:includeFontPadding">false</item>
@@ -373,11 +380,17 @@
 
     <style name="DropTargetButton" parent="DropTargetButtonBase" />
 
-    <style name="TextHeadline" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle" />
+    <style name="TextHeadline" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle">
+        <item name="android:fontFamily">@font/mushin</item>
+    </style>
 
-    <style name="PrimaryHeadline" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"/>
+    <style name="PrimaryHeadline" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle">
+        <item name="android:fontFamily">@font/mushin</item>
+    </style>
 
-    <style name="TextTitle" parent="@android:style/TextAppearance.DeviceDefault" />
+    <style name="TextTitle" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">@font/mushin</item>
+    </style>
 
     <style name="Button.TopRounded.Bordered" parent="@android:style/Widget.Material.Button">
         <item name="android:background">@drawable/button_top_rounded_bordered_ripple</item>
@@ -438,7 +451,7 @@
     <style name="PrivateSpaceHeaderTextStyle">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/materialColorOnSurface</item>
-        <item name="android:fontFamily">google-sans-text-medium</item>
+        <item name="android:fontFamily">@font/mushin</item>
         <item name="android:ellipsize">end</item>
     </style>
 </resources>

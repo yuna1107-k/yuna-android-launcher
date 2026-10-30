@@ -81,6 +81,7 @@ import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.search.AllAppsSearchUiDelegate;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.custom.AllAppsBackground;
 import com.android.launcher3.keyboard.FocusedItemDecorator;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.model.StringCache;
@@ -196,10 +197,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mActivityContext = ActivityContext.lookupContext(context);
         mAllAppsStore = new AllAppsStore<>(mActivityContext);
 
-        mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
+        mScrimColor = AllAppsBackground.getScrimColor(context);
         mHeaderThreshold = getResources().getDimensionPixelSize(
                 R.dimen.dynamic_grid_cell_border_spacing);
-        mHeaderProtectionColor = Themes.getAttrColor(context, R.attr.allappsHeaderProtectionColor);
+        mHeaderProtectionColor = AllAppsBackground.getHeaderProtectionColor(context);
 
         mWorkManager = new WorkProfileManager(
                 mActivityContext.getSystemService(UserManager.class),
@@ -804,9 +805,11 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     protected int getHeaderColor(float blendRatio) {
-        return ColorUtils.setAlphaComponent(
-                ColorUtils.blendARGB(mScrimColor, mHeaderProtectionColor, blendRatio),
-                (int) (mSearchContainer.getAlpha() * 255));
+        // The scrim is translucent, so fade the protection in from transparent instead of
+        // blending from the scrim color (which would double the scrim behind the header).
+        return ColorUtils.setAlphaComponent(mHeaderProtectionColor,
+                (int) (Color.alpha(mHeaderProtectionColor) * blendRatio
+                        * mSearchContainer.getAlpha()));
     }
 
     /**

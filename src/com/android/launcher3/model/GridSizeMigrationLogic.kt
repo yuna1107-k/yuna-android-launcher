@@ -24,12 +24,12 @@ import com.android.launcher3.Flags
 import com.android.launcher3.Flags.oneGridSpecs
 import com.android.launcher3.LauncherPrefs
 import com.android.launcher3.LauncherPrefs.Companion.get
-import com.android.launcher3.LauncherPrefs.Companion.getPrefs
 import com.android.launcher3.LauncherSettings
 import com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME
 import com.android.launcher3.LauncherSettings.Favorites.TMP_TABLE
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
+import com.android.launcher3.custom.CustomSettings
 import com.android.launcher3.model.GridSizeMigrationDBController.DbReader
 import com.android.launcher3.provider.LauncherDbUtils.SQLiteTransaction
 import com.android.launcher3.provider.LauncherDbUtils.copyTable
@@ -478,11 +478,11 @@ class GridSizeMigrationLogic {
                 screenId == 0 &&
                     (FeatureFlags.QSB_ON_FIRST_SCREEN &&
                         (!Flags.enableSmartspaceRemovalToggle() ||
-                            getPrefs(context)
-                                .getBoolean(LoaderTask.SMARTSPACE_ON_HOME_SCREEN, true)) &&
+                            CustomSettings.isFirstPagePinnedItemEnabled(context)) &&
+                        CustomSettings.getFirstPagePinnedItemRow(context, trgY) == 0 &&
                         !Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET)
             ) {
-                Point(0, 1 /* smartspace */)
+                Point(0, CustomSettings.getFirstPagePinnedItemRows(context))
             } else {
                 Point(0, 0)
             }

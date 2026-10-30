@@ -243,22 +243,22 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
                 widgetView.getAppWidgetInfo();
         mDragLayer = dragLayer;
 
-        mMinHSpan = info.minSpanX;
-        mMinVSpan = info.minSpanY;
-        mMaxHSpan = info.maxSpanX;
-        mMaxVSpan = info.maxSpanY;
+        // Every widget can be resized freely in both directions, from 1x1 up to the whole grid,
+        // regardless of the size limits the widget declares.
+        InvariantDeviceProfile idp = LauncherAppState.getIDP(cellLayout.getContext());
+        mMinHSpan = 1;
+        mMinVSpan = 1;
+        mMaxHSpan = idp.numColumns;
+        mMaxVSpan = idp.numRows;
 
         // Only show resize handles for the directions in which resizing is possible.
-        InvariantDeviceProfile idp = LauncherAppState.getIDP(cellLayout.getContext());
-        mVerticalResizeActive = (info.resizeMode & AppWidgetProviderInfo.RESIZE_VERTICAL) != 0
-                && mMinVSpan < idp.numRows && mMaxVSpan > 1
+        mVerticalResizeActive = mMinVSpan < idp.numRows && mMaxVSpan > 1
                 && mMinVSpan < mMaxVSpan;
         if (!mVerticalResizeActive) {
             mDragHandles[INDEX_TOP].setVisibility(GONE);
             mDragHandles[INDEX_BOTTOM].setVisibility(GONE);
         }
-        mHorizontalResizeActive = (info.resizeMode & AppWidgetProviderInfo.RESIZE_HORIZONTAL) != 0
-                && mMinHSpan < idp.numColumns && mMaxHSpan > 1
+        mHorizontalResizeActive = mMinHSpan < idp.numColumns && mMaxHSpan > 1
                 && mMinHSpan < mMaxHSpan;
         if (!mHorizontalResizeActive) {
             mDragHandles[INDEX_LEFT].setVisibility(GONE);
