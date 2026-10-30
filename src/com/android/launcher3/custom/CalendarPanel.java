@@ -118,18 +118,16 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
         mScroll.setPadding(0, 0, 0, Math.max(0, insets.bottom - dp(10)));
         mDays = new LinearLayout(launcher);
         mDays.setOrientation(VERTICAL);
-        mDays.setPadding(dp(12), 0, dp(12), 0);
+        int side = Math.round(launcher.getDeviceProfile().widthPx * (1 - WIDTH_FRACTION) / 2);
+        mDays.setPadding(side, 0, side, 0);
         mScroll.addView(mDays);
         sheet.addView(mScroll, new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT));
 
         mContent = sheet;
-        // Grows up from the bottom edge (where the navigation bar is), 90% wide, centered.
-        LayoutParams sheetLp = new LayoutParams(
-                Math.round(launcher.getDeviceProfile().widthPx * WIDTH_FRACTION),
-                LayoutParams.WRAP_CONTENT);
-        sheetLp.gravity = Gravity.CENTER_HORIZONTAL;
-        addView(sheet, sheetLp);
+        // Grows up from the bottom edge and spans the full width (no gap to the bezels); the
+        // day cards inside take about 90% of the width.
+        addView(sheet, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         load();
     }
 

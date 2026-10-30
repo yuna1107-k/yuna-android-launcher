@@ -17,6 +17,8 @@ import com.android.launcher3.R;
  */
 public final class DrawerListLayout {
 
+    private static final float START_INSET_FRACTION = 0.05f;
+
     private DrawerListLayout() { }
 
     public static boolean isEnabled(Context context) {
@@ -39,6 +41,10 @@ public final class DrawerListLayout {
         icon.setCompoundDrawablePadding(
                 res.getDimensionPixelSize(R.dimen.drawer_list_icon_padding));
         icon.setCenterVertically(false);
+        // About 5% of the screen width before the icon.
+        int start = Math.round(res.getDisplayMetrics().widthPixels * START_INSET_FRACTION);
+        icon.setPaddingRelative(start, icon.getPaddingTop(), icon.getPaddingEnd(),
+                icon.getPaddingBottom());
         CustomFonts.apply(icon);
         return icon;
     }
