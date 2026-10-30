@@ -114,8 +114,8 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
             }
         };
         mScroll.setClipToPadding(false);
-        // Runs to the bottom edge; the last day only clears the navigation bar.
-        mScroll.setPadding(0, 0, 0, Math.max(0, insets.bottom - dp(10)));
+        // The list runs right to the bottom edge of the screen, with no gap.
+        mScroll.setPadding(0, 0, 0, 0);
         mDays = new LinearLayout(launcher);
         mDays.setOrientation(VERTICAL);
         int side = Math.round(launcher.getDeviceProfile().widthPx * (1 - WIDTH_FRACTION) / 2);
@@ -163,8 +163,13 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
             } else if (i == 1) {
                 label = getContext().getString(R.string.week_panel_tomorrow, label);
             }
-            mDays.addView(dayCard(dayStart, label, weather.get(iso.format(day.getTime())),
-                    dayEvents, i == 0));
+            View card = dayCard(dayStart, label, weather.get(iso.format(day.getTime())),
+                    dayEvents, i == 0);
+            if (i == DAYS - 1) {
+                // No gap below the last day.
+                ((LayoutParams) card.getLayoutParams()).bottomMargin = 0;
+            }
+            mDays.addView(card);
             day.add(Calendar.DAY_OF_YEAR, 1);
         }
     }
