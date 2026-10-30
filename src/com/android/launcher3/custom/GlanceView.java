@@ -52,6 +52,7 @@ public class GlanceView extends LinearLayout {
     private static final String KEY_PERMISSIONS_ASKED = "pref_glance_permissions_asked";
 
     private final LinearLayout mClockRow;
+    private LinearLayout mSide;
     private final FrameLayout mClockContainer;
     private final SonyStyleClockView mClock;
     private final GlanceClockWidget mClockWidget;
@@ -78,16 +79,15 @@ public class GlanceView extends LinearLayout {
     public GlanceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOrientation(VERTICAL);
-        // Laid out like the Xperia home clock: centered in the area it occupies, with some
-        // breathing room above and below.
+        // Laid out like the Xperia home clock, centered in the (single row) area it occupies.
         setGravity(Gravity.CENTER);
         int pad = dp(8);
-        setPadding(pad, dp(10), pad, dp(10));
+        setPadding(pad, dp(3), pad, dp(3));
 
         // Clock row: the clock with the next alarm to its lower right.
         mClockRow = new LinearLayout(context);
         mClockRow.setOrientation(HORIZONTAL);
-        mClockRow.setGravity(Gravity.BOTTOM);
+        mClockRow.setGravity(Gravity.CENTER_VERTICAL);
         LayoutParams clockRowLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
         clockRowLp.gravity = Gravity.CENTER_HORIZONTAL;
@@ -101,28 +101,28 @@ public class GlanceView extends LinearLayout {
 
         // (The weather lives in the column next to the clock to keep the panel short.)
 
-        // Right of the clock: date ('26 10/30 Fri) above the next alarm.
+        // Right of the clock: date ('26 10/30 Fri), weather, next alarm and next event, so
+        // the whole panel is only as tall as the clock.
         LinearLayout side = new LinearLayout(context);
+        mSide = side;
         side.setOrientation(VERTICAL);
         LayoutParams sideLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
         sideLp.setMarginStart(dp(10));
-        sideLp.bottomMargin = dp(6);
+        sideLp.gravity = Gravity.CENTER_VERTICAL;
         mClockRow.addView(side, sideLp);
-        mDate = styled(new TextView(context), 14);
-        side.addView(mDate);
-        mWeather = styled(new TextView(context), 14);
-        side.addView(mWeather);
-        mAlarm = styled(new TextView(context), 14);
-        side.addView(mAlarm);
+        mDate = styled(new TextView(context), 13);
+        // WRAP_CONTENT so each line sizes the column (MATCH_PARENT lines would be clipped to
+        // the width of the others).
+        side.addView(mDate, wrap());
+        mWeather = styled(new TextView(context), 13);
+        side.addView(mWeather, wrap());
+        mAlarm = styled(new TextView(context), 13);
+        side.addView(mAlarm, wrap());
         mAlarm.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
 
-        mEvent = styled(new TextView(context), 15);
-        mEvent.setGravity(Gravity.CENTER);
-        LayoutParams eventLp = new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT);
-        eventLp.topMargin = dp(4);
-        addView(mEvent, eventLp);
+        mEvent = styled(new TextView(context), 13);
+        mSide.addView(mEvent, wrap());
 
         OnClickListener openWeek = v -> onDetailsClicked();
         mDate.setOnClickListener(openWeek);
@@ -361,6 +361,10 @@ public class GlanceView extends LinearLayout {
         } catch (RuntimeException e) {
             Log.w(TAG, "Unable to open " + intent, e);
         }
+    }
+
+    private static LayoutParams wrap() {
+        return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     }
 
     private int dp(int value) {
