@@ -20,6 +20,9 @@ public final class CustomSettings {
     /** Top row of the search bar / glance panel on the first page. */
     public static final String KEY_PINNED_ITEM_ROW = "pref_pinned_item_row";
 
+    /** Rows the glance panel needs for its content. */
+    public static final String KEY_GLANCE_ROWS = "pref_glance_rows";
+
     /** App widget used as the clock in the glance panel. */
     public static final String KEY_GLANCE_CLOCK_WIDGET = "pref_glance_clock_widget";
 
@@ -98,10 +101,18 @@ public final class CustomSettings {
         return isSearchBarOnHome(context) || isGlanceOnHome(context);
     }
 
-    /** Number of rows the first page pinned item takes: 2 for the glance panel, 1 for search. */
+    /** Rows the first page pinned item takes: what the glance panel needs, +1 for search. */
     public static int getFirstPagePinnedItemRows(Context context) {
-        int rows = (isGlanceOnHome(context) ? 2 : 0) + (isSearchBarOnHome(context) ? 1 : 0);
+        int rows = (isGlanceOnHome(context) ? prefs(context).getInt(KEY_GLANCE_ROWS, 2) : 0)
+                + (isSearchBarOnHome(context) ? 1 : 0);
         return Math.max(1, rows);
+    }
+
+    /** Saves the rows the glance panel's content needs (measured on screen). */
+    public static void setGlanceRows(Context context, int rows) {
+        if (prefs(context).getInt(KEY_GLANCE_ROWS, 2) != rows) {
+            prefs(context).edit().putInt(KEY_GLANCE_ROWS, rows).apply();
+        }
     }
 
     /** Top row of the first page pinned item, chosen by the user, within a grid of numRows. */

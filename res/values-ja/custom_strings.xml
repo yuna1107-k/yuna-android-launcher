@@ -50,4 +50,5 @@
     <string name="week_panel_today">今日 · <xliff:g id="date" example="10月30日(金)">%1$s</xliff:g></string>
     <string name="week_panel_tomorrow">明日 · <xliff:g id="date" example="10月31日(土)">%1$s</xliff:g></string>
     <string name="week_panel_weather"><xliff:g id="symbol" example="☀️">%1$s</xliff:g> <xliff:g id="high" example="22">%2$d</xliff:g>°/<xliff:g id="low" example="12">%3$d</xliff:g>°</string>
+    <string name="glance_alarm"><xliff:g id="time" example="6:00">%1$s</xliff:g> (<xliff:g id="day" example="土">%2$s</xliff:g>)</string>
 </resources>

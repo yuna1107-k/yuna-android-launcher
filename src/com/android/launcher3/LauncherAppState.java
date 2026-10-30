@@ -162,7 +162,8 @@ public class LauncherAppState implements SafeCloseable {
                             // them (see PinnedAreaRelocator).
                             if (SMARTSPACE_ON_HOME_SCREEN.equals(key)
                                     || CustomSettings.KEY_GLANCE_ON_HOME.equals(key)
-                                    || CustomSettings.KEY_PINNED_ITEM_ROW.equals(key)) {
+                                    || CustomSettings.KEY_PINNED_ITEM_ROW.equals(key)
+                                    || CustomSettings.KEY_GLANCE_ROWS.equals(key)) {
                                 mModel.forceReload();
                             }
                         }

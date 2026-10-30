@@ -55,11 +55,6 @@ public final class SearchBarOptions {
     }
 
     private static void addCommon(Launcher launcher, View anchor, List<OptionItem> options) {
-        FirstPagePinnedView pinned = FirstPagePinnedView.from(anchor);
-        if (pinned != null) {
-            options.add(item(launcher, R.string.pinned_adjust_position,
-                    R.drawable.enter_home_gardening_icon, pinned::startAdjusting));
-        }
         options.add(item(launcher, R.string.settings_button_text, R.drawable.ic_setting,
                 () -> CustomSettings.openSettings(launcher)));
     }

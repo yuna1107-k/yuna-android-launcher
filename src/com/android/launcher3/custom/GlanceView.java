@@ -5,6 +5,7 @@ import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.appwidget.AppWidgetHostView;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,7 +30,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.CheckLongPressHelper;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
@@ -57,8 +57,8 @@ public class GlanceView extends LinearLayout {
     @Nullable private View mShownClock;
     private final TextView mDate;
     private final TextView mWeather;
+    private final TextView mAlarm;
     private final TextView mEvent;
-    private final CheckLongPressHelper mLongPressHelper;
 
     private final BroadcastReceiver mTimeReceiver = new BroadcastReceiver() {
         @Override
@@ -77,13 +77,16 @@ public class GlanceView extends LinearLayout {
     public GlanceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOrientation(VERTICAL);
-        setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        // Laid out like the Xperia home clock: everything centered under the clock.
+        setGravity(Gravity.CENTER);
         int pad = dp(8);
         setPadding(pad, 0, pad, 0);
 
         mClockContainer = new FrameLayout(context);
-        addView(mClockContainer, new LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT));
+        LayoutParams clockLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
+        clockLp.gravity = Gravity.CENTER_HORIZONTAL;
+        addView(mClockContainer, clockLp);
         mClock = new SonyStyleClockView(context);
         mClock.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
         mClockWidget = new GlanceClockWidget(context);
@@ -91,7 +94,10 @@ public class GlanceView extends LinearLayout {
         LinearLayout row = new LinearLayout(context);
         row.setOrientation(HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        addView(row, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        LayoutParams rowLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
+        rowLp.gravity = Gravity.CENTER_HORIZONTAL;
+        addView(row, rowLp);
         mDate = styled(new TextView(context), 17);
         row.addView(mDate);
         mWeather = styled(new TextView(context), 17);
@@ -100,7 +106,16 @@ public class GlanceView extends LinearLayout {
         weatherLp.setMarginStart(dp(12));
         row.addView(mWeather, weatherLp);
 
+        mAlarm = styled(new TextView(context), 15);
+        mAlarm.setGravity(Gravity.CENTER);
+        LayoutParams alarmLp = new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT);
+        alarmLp.topMargin = dp(2);
+        addView(mAlarm, alarmLp);
+        mAlarm.setOnClickListener(v -> startSafely(new Intent(AlarmClock.ACTION_SHOW_ALARMS)));
+
         mEvent = styled(new TextView(context), 15);
+        mEvent.setGravity(Gravity.CENTER);
         LayoutParams eventLp = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
         eventLp.topMargin = dp(2);
@@ -111,11 +126,11 @@ public class GlanceView extends LinearLayout {
         mWeather.setOnClickListener(openWeek);
         mEvent.setOnClickListener(openWeek);
 
-        mLongPressHelper = new CheckLongPressHelper(this, SearchBarOptions::showForGlance);
         updateClock();
     }
 
     private TextView styled(TextView view, int sp) {
+        CustomFonts.apply(view);
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         view.setTextColor(Themes.getAttrColor(getContext(), R.attr.workspaceTextColor));
         view.setShadowLayer(dp(3), 0, dp(1) / 2f,
@@ -128,7 +143,7 @@ public class GlanceView extends LinearLayout {
 
     /** Uses a smaller clock when the search bar shares the space. */
     public void setCompact(boolean compact) {
-        mClock.setHourTextSize(compact ? 64 : 84);
+        // Fixed size so the panel's measured height (and rows) stays stable.
     }
 
     /** Shows the built-in clock or the clock widget picked in settings. */
@@ -171,6 +186,7 @@ public class GlanceView extends LinearLayout {
         filter.addAction(Intent.ACTION_TIME_CHANGED);
         filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         filter.addAction(Intent.ACTION_DATE_CHANGED);
+        filter.addAction(AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED);
         getContext().registerReceiver(mTimeReceiver, filter);
         if (CalendarRepository.hasPermission(getContext())) {
             try {
@@ -212,8 +228,10 @@ public class GlanceView extends LinearLayout {
     // Date and calendar
 
     private void refreshDateAndEvents() {
+        mClock.update();
         String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdEEE");
         mDate.setText(DateFormat.format(pattern, System.currentTimeMillis()));
+        updateAlarm();
 
         if (!CalendarRepository.hasPermission(getContext())) {
             mEvent.setText(R.string.glance_grant_permission);
@@ -246,6 +264,30 @@ public class GlanceView extends LinearLayout {
                 == Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
         return today ? time + "  " + e.title
                 : context.getString(R.string.glance_event_tomorrow, time, e.title);
+    }
+
+    /** Next alarm, like "⏰ 6:00 (土)". */
+    private void updateAlarm() {
+        AlarmManager am = getContext().getSystemService(AlarmManager.class);
+        AlarmManager.AlarmClockInfo next = am != null ? am.getNextAlarmClock() : null;
+        if (next == null) {
+            mAlarm.setVisibility(GONE);
+            return;
+        }
+        String day = DateFormat.format(
+                DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEE"),
+                next.getTriggerTime()).toString();
+        mAlarm.setText(getContext().getString(R.string.glance_alarm,
+                DateFormat.getTimeFormat(getContext()).format(next.getTriggerTime()), day));
+        android.graphics.drawable.Drawable icon = getContext().getDrawable(R.drawable.ic_glance_alarm);
+        if (icon != null) {
+            int size = Math.round(mAlarm.getTextSize());
+            icon.setBounds(0, 0, size, size);
+            icon.setTint(mAlarm.getCurrentTextColor());
+            mAlarm.setCompoundDrawablesRelative(icon, null, null, null);
+            mAlarm.setCompoundDrawablePadding(dp(4));
+        }
+        mAlarm.setVisibility(VISIBLE);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -304,27 +346,6 @@ public class GlanceView extends LinearLayout {
         } catch (RuntimeException e) {
             Log.w(TAG, "Unable to open " + intent, e);
         }
-    }
-
-    // ---------------------------------------------------------------------------------------
-    // Long press: menu to hide / move the panel or change the clock
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        mLongPressHelper.onTouchEvent(ev);
-        return mLongPressHelper.hasPerformedLongPress() || super.onInterceptTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        mLongPressHelper.onTouchEvent(ev);
-        return true;
-    }
-
-    @Override
-    public void cancelLongPress() {
-        super.cancelLongPress();
-        mLongPressHelper.cancelLongPress();
     }
 
     private int dp(int value) {

@@ -268,7 +268,7 @@ public class CalendarPanel extends AbstractSlideInView<Launcher> {
     }
 
     private TextView text(CharSequence value, int sp, int color) {
-        TextView view = new TextView(getContext());
+        TextView view = CustomFonts.apply(new TextView(getContext()));
         view.setText(value);
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         view.setTextColor(color);
