@@ -334,6 +334,15 @@ public class SettingsActivity extends FragmentActivity
                         return true;
                     });
                     return true;
+                case CustomSettings.KEY_DRAWER_LAYOUT:
+                    // Rebuild the drawer once the new value has been saved.
+                    preference.setOnPreferenceChangeListener((pref, newValue) -> {
+                        Context appContext = getContext().getApplicationContext();
+                        MAIN_EXECUTOR.post(() -> com.android.launcher3.custom.DrawerListLayout
+                                .onSettingChanged(appContext));
+                        return true;
+                    });
+                    return true;
                 case DEVELOPER_OPTIONS_KEY:
                     if (IS_STUDIO_BUILD) {
                         preference.setOrder(0);

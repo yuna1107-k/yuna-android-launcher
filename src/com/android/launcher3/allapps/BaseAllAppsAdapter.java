@@ -44,6 +44,7 @@ import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
+import com.android.launcher3.custom.DrawerListLayout;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.views.ActivityContext;
 
@@ -219,6 +220,16 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_ICON:
+                // Custom: list mode uses a horizontal row (icon start, label after it).
+                if (DrawerListLayout.isEnabled(mActivityContext)) {
+                    BubbleTextView row = DrawerListLayout.inflateIcon(mLayoutInflater, parent);
+                    row.setLongPressTimeoutFactor(1f);
+                    row.setOnFocusChangeListener(mIconFocusListener);
+                    row.setOnClickListener(mOnIconClickListener);
+                    row.setOnLongClickListener(mOnIconLongClickListener);
+                    row.getLayoutParams().height = DrawerListLayout.getRowHeight(mActivityContext);
+                    return new ViewHolder(row);
+                }
                 int layout = (Flags.enableTwolineToggle()
                         && LauncherPrefs.ENABLE_TWOLINE_ALLAPPS_TOGGLE.get(
                                 mActivityContext.getApplicationContext()))

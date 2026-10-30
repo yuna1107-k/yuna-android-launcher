@@ -82,6 +82,7 @@ import com.android.launcher3.allapps.search.AllAppsSearchUiDelegate;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.custom.AllAppsBackground;
+import com.android.launcher3.custom.DrawerListLayout;
 import com.android.launcher3.keyboard.FocusedItemDecorator;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.model.StringCache;
@@ -982,9 +983,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
     @Override
     public void onDeviceProfileChanged(DeviceProfile dp) {
+        // Custom: 1 per row in drawer list mode.
+        int appsPerRow = DrawerListLayout.getAppsPerRow(mActivityContext,
+                dp.numShownAllAppsColumns);
         for (AdapterHolder holder : mAH) {
-            holder.mAdapter.setAppsPerRow(dp.numShownAllAppsColumns);
-            holder.mAppsList.setNumAppsPerRowAllApps(dp.numShownAllAppsColumns);
+            holder.mAdapter.setAppsPerRow(appsPerRow);
+            holder.mAppsList.setNumAppsPerRowAllApps(appsPerRow);
             if (holder.mRecyclerView != null) {
                 // Remove all views and clear the pool, while keeping the data same. After this
                 // call, all the viewHolders will be recreated.

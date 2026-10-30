@@ -119,6 +119,16 @@
         android:title="@string/settings_category_drawer"
         android:iconSpaceReserved="false">
 
+        <ListPreference
+            android:key="pref_drawer_layout"
+            android:title="@string/drawer_layout_title"
+            launcher:useSimpleSummaryProvider="true"
+            android:entries="@array/drawer_layout_entries"
+            android:entryValues="@array/drawer_layout_values"
+            android:defaultValue="grid"
+            android:persistent="true"
+            android:iconSpaceReserved="false" />
+
         <SeekBarPreference
             android:key="pref_drawer_opacity"
             android:title="@string/drawer_opacity_title"
